@@ -13,8 +13,11 @@ cmake-build-*/
 *.log
 *.cache
 
-# Ignorar archivos de CMake generados
+# Archivos de CMake generados
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+
+# Librerias externas
+GLAD/

@@ -1,0 +1,20 @@
+# Configuración de IDE
+.idea/
+
+# Carpetas de compilación de CMake
+cmake-build-debug/
+cmake-build-release/
+cmake-build-*/
+
+# Archivos temporales
+*.o
+*.obj
+*.exe
+*.log
+*.cache
+
+# Ignorar archivos de CMake generados
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile

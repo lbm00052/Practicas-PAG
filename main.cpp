@@ -3,6 +3,7 @@
 // IMPORTANTE: El include de GLAD debe estar siempre ANTES de el de GLFW
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <algorithm>
 
 // - Esta función callback será llamada cuando GLFW produzca algún error
 void error_callback ( int errno, const char* desc ) {
@@ -50,12 +51,41 @@ void mouse_button_callback ( GLFWwindow *window, int button, int action, int mod
     }
 }
 
+// - Struct para el color de una ventana
+struct Color {
+    float r, g, b, a;
+};
+
+// - Función para cambiar el color del fondo de una ventana según
+// el movimiento de la rueda del ratón
+    // y : dirección vertical en que se movió el ratón
+void cambio_color_fondo ( GLFWwindow *window, double y ){
+
+    // Obtención del puntero de usuario (en este caso es el puntero al color)
+    Color* c = static_cast<Color*>( glfwGetWindowUserPointer(window) );
+
+    float desp = y * 0.1, cota_inf = 0.0, cota_sup = 1.0; // variables
+
+    // Cambio del color del fondo de pantalla
+        // std::clamp(valor, cota inferior, cota superior) -> sirve para acotar nºs (librería: algorith)
+    c->r = std::clamp((c->r += desp), cota_inf, cota_sup);
+    c->g = std::clamp((c->g += desp), cota_inf, cota_sup);
+    c->b = std::clamp((c->b += desp), cota_inf, cota_sup);
+
+    glClearColor(c->r, c->g, c->b, c->a); // Colorear
+    window_refresh_callback( window ); // Refrescar
+    // No refresco dentro del bucle porque solo me interesa el cambio que produce esta función
+}
+
 // - Esta función callback será llamada cada vez que se mueva la rueda
 // del ratón sobre el área de dibujo OpenGL.
+    // El color de la ventana cambiará al mover la rueda
 void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset ) {
     std::cout << "Movida la rueda del raton " << xoffset
               << " Unidades en horizontal y " << yoffset
               << " unidades en vertical" << std::endl;
+
+    cambio_color_fondo( window,yoffset );
 }
 
 int main() {
@@ -123,7 +153,16 @@ int main() {
 
     // - Establecemos un gris medio como color con el que se borrará el frame buffer.
     // No tiene por qué ejecutarse en cada paso por el ciclo de eventos.
-    glClearColor(0.6, 0.6, 0.6, 1.0);
+    Color fondo = {0.6,0.6,0.6,1};
+
+        // Para poder acceder al color de la ventana en cualquier lugar donde se tenga
+        // acceso a la ventana asignamos un puntero de usuario (puntero asociado a una
+        // ventana que puede tener cualquier propósito). En este caso, como solo nos
+        // interesa conocer el color del fondo, dicho puntero apuntará al color que hemos
+        // asignado al fondo.
+    glfwSetWindowUserPointer( window, &fondo);
+
+    glClearColor(fondo.r, fondo.g, fondo.b, fondo.a);
 
     // - Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de dibujar.
     // No tiene por qué ejecutarse en cada paso por el ciclo de eventos.

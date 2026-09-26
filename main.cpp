@@ -3,6 +3,11 @@
 // IMPORTANTE: El include de GLAD debe estar siempre ANTES de el de GLFW
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 #include "Renderer.h"
 
 // - Esta función callback será llamada cuando GLFW produzca algún error
@@ -14,7 +19,26 @@ void error_callback ( int errno, const char* desc ) {
 // - Esta función callback será llamada cada vez que el área de dibujo
 // OpenGL deba ser redibujada.
 void window_refresh_callback ( GLFWwindow *window ) {
+
+    // Nuevo frame de ImGui
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Dibuja controles ImGui
+    ImGui::SetNextWindowPos ( ImVec2 (10, 10), ImGuiCond_Once );
+    if (ImGui::Begin("Mensajes")) {
+        ImGui::SetWindowFontScale ( 1.0f );
+        ImGui::Text("Hola desde ImGui");
+    }
+    ImGui::End();
+
+    // Dibuja la escena OpenGL
     PAG::Renderer::getInstancia().refrescar();
+
+    // Renderiza ImGui
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // - GLFW usa un doble buffer para que no haya parpadeo. Esta orden
     // intercambia el buffer back (que se ha estado dibujando) por el
@@ -22,7 +46,7 @@ void window_refresh_callback ( GLFWwindow *window ) {
     // este callback
     glfwSwapBuffers( window );
 
-    std::cout << "Refresh callback called" << std::endl;
+    //std::cout << "Refresh callback called" << std::endl;
 }
 
 // - Esta función callback será llamada cada vez que se cambie el tamaño
@@ -35,8 +59,31 @@ void framebuffer_size_callback ( GLFWwindow *window, int width, int height ) {
 // - Esta función callback será llamada cada vez que se pulse una tecla
 // dirigida al área de dibujo OpenGL.
 void key_callback ( GLFWwindow *window, int key, int scancode, int action, int mods ) {
-    if ( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS ) {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+    // GLFW trata las teclas de forma diferente a ImGui. Mientras que en GLFW un int
+    // se corresponde con una tecla, en el caso de ImGui estas se encuentran dentro de
+    // un enum, por lo que hay que mapearlas manualmente.
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    // Mapear teclas especiales
+    if (key == GLFW_KEY_LEFT)
+        io.AddKeyEvent(ImGuiKey_LeftArrow, action == GLFW_PRESS);
+
+    if (key == GLFW_KEY_RIGHT)
+        io.AddKeyEvent(ImGuiKey_RightArrow, action == GLFW_PRESS);
+
+    if (key == GLFW_KEY_UP)
+        io.AddKeyEvent(ImGuiKey_UpArrow, action == GLFW_PRESS);
+
+    if (key == GLFW_KEY_DOWN)
+        io.AddKeyEvent(ImGuiKey_DownArrow, action == GLFW_PRESS);
+
+    if ( key == GLFW_KEY_ESCAPE) {
+        io.AddKeyEvent(ImGuiKey_Escape, action == GLFW_PRESS);
+        if (action == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
     }
     std::cout << "Key callback called" << std::endl;
 }
@@ -46,8 +93,15 @@ void key_callback ( GLFWwindow *window, int key, int scancode, int action, int m
 void mouse_button_callback ( GLFWwindow *window, int button, int action, int mods ) {
     if ( action == GLFW_PRESS ) {
         std::cout << "Pulsado el boton: " << button << std::endl;
+
+        ImGuiIO& io = ImGui::GetIO ();
+        io.AddMouseButtonEvent(button, true );
+
     } else if ( action == GLFW_RELEASE ) {
         std::cout << "Soltado el boton: " << button << std::endl;
+
+        ImGuiIO& io = ImGui::GetIO ();
+        io.AddMouseButtonEvent(button, false );
     }
 }
 
@@ -59,9 +113,11 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset ) {
               << " Unidades en horizontal y " << yoffset
               << " unidades en vertical" << std::endl;
 
+    // ImGui necesita recibir el evento
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddMouseWheelEvent((float)xoffset, (float)yoffset);
+
     PAG::Renderer::getInstancia().onScroll(yoffset);
-    // No refresco dentro del bucle porque solo me interesa el cambio que produce esta función
-    window_refresh_callback(window);
 }
 
 int main() {
@@ -114,6 +170,16 @@ int main() {
         return -3;
     }
 
+    // Inicialización de ImGui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+    // Inicialización de GLFW y OpenGL con ImGui
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 430");
+
     // - Interrogamos a OpenGL para que nos informe de las propiedades del contexto 3D construido.
         // Aunque usa OpenGL no lo añado a Renderer porque es información del contexto
     std::cout << glGetString(GL_RENDERER) << std::endl
@@ -140,7 +206,15 @@ int main() {
         // teclas o de ratón, etc. Siempre al final de cada iteración del ciclo
         // de eventos y después de glfwSwapBuffers(window);
         glfwPollEvents();
+
+        // Refresco de la ventana
+        window_refresh_callback(window);
     }
+
+    // Liberamos recursos de ImGui
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     // - Una vez terminado el ciclo de eventos, liberar recursos, etc.
     std::cout << "Finishing application pag prueba" << std::endl;

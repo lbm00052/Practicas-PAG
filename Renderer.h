@@ -3,6 +3,12 @@
 
 // Espacio de nombres para las prácticas de PAG
 namespace PAG {
+
+    // Struct para el color
+    struct Color {
+        float r, g, b, a;
+    };
+
     /**
      * @brief Clase encargada de encapsular la gestión del área de dibujo OpenGL
      *
@@ -20,6 +26,9 @@ namespace PAG {
             // Constructor
             Renderer();
 
+            // Color para el fondo de la instancia
+            Color fondo;
+
         public:
 
             // Destructor
@@ -30,6 +39,15 @@ namespace PAG {
 
             // Método para hacer el refresco de la escena
             void refrescar();
+
+            // Método para cambiar de tamaño de la ventana
+            void onResize(int width, int height);
+
+            // Método para cambiar el color del fondo según el scroll
+            void onScroll(double y);
+
+            // Método para inicializar OpenGL
+            void init();
     };
 }
 

@@ -7,6 +7,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <vector>
 
 #include "Renderer.h"
 
@@ -16,25 +17,64 @@ void error_callback ( int errno, const char* desc ) {
     std::cout << "Error de GLFW numero " << errno << ": " << aux << std::endl;
 }
 
+// Función que gestiona la adición de mensajes en el vector de mensajes
+// creado en el userpointer
+void logMensajes ( GLFWwindow *window, const std::string& msg ) {
+
+    // Obtención del puntero de usuario
+    std::vector<std::string>* mensajes = static_cast<std::vector<std::string>*>(glfwGetWindowUserPointer(window));
+    // Adición del nuevo mensaje al vector
+    mensajes->push_back( msg );
+    std::cout << msg << std::endl; // Muestra el mensaje
+}
+
 // - Esta función callback será llamada cada vez que el área de dibujo
 // OpenGL deba ser redibujada.
 void window_refresh_callback ( GLFWwindow *window ) {
 
-    // Nuevo frame de ImGui
+    // Refresca la escena OpenGL
+    PAG::Renderer::getInstancia().refrescar();
+
+    // Inicialización del nuevo frame de ImGui
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // Dibuja controles ImGui
-    ImGui::SetNextWindowPos ( ImVec2 (10, 10), ImGuiCond_Once );
-    if (ImGui::Begin("Mensajes")) {
-        ImGui::SetWindowFontScale ( 1.0f );
-        ImGui::Text("Hola desde ImGui");
+    // Ventana de mensajes
+        // Obtención del puntero de usuario
+    std::vector<std::string>* mensajes = static_cast<std::vector<std::string>*>(glfwGetWindowUserPointer(window));
+        // Posición de la ventana (solo la primera vez)
+    ImGui::SetNextWindowPos(ImVec2 (10, 10), ImGuiCond_Once);
+        // Abre la ventana
+    if ( ImGui::Begin("Mensajes") ) {
+        ImGui::SetWindowFontScale(1.0f); // Ajuste de la fuente
+
+        // Zona con scroll automático
+        ImGui::BeginChild("scroll_region",ImVec2(0,0),true);
+
+        for ( const std::string& s : *mensajes ) {
+            ImGui::Text("%s",s.c_str()); // Dibuja cada mensaje
+        }
+
+        // Desplaza el scroll al final de cada frame (para que se muestre el último mensaje)
+        ImGui::SetScrollHereY(1.0f);
+        ImGui::EndChild(); // Fin de la ventana de scroll
+    }
+    ImGui::End(); // Fin de la ventana de mensajes
+
+    // Ventana se selección de color
+    ImGui::SetNextWindowPos(ImVec2 (10, 250), ImGuiCond_Once);
+    if ( ImGui::Begin("Selector de color") ) {
+        ImGui::SetWindowFontScale(1.0f);
+
+        // Obtener referencia al color de fondo
+        PAG::Color& c = PAG::Renderer::getInstancia().getColorFondo();
+        // Selector de color RGB
+        ImGui::ColorPicker4("Color", (float*)&c);
+        // Cambia el color en el Renderer
+        PAG::Renderer::getInstancia().cambiarColor(c);
     }
     ImGui::End();
-
-    // Dibuja la escena OpenGL
-    PAG::Renderer::getInstancia().refrescar();
 
     // Renderiza ImGui
     ImGui::Render();
@@ -52,8 +92,8 @@ void window_refresh_callback ( GLFWwindow *window ) {
 // - Esta función callback será llamada cada vez que se cambie el tamaño
 // del área de dibujo OpenGL.
 void framebuffer_size_callback ( GLFWwindow *window, int width, int height ) {
-    PAG::Renderer::getInstancia().onResize(width,height);
-    std::cout << "Resize callback called" << std::endl;
+    PAG::Renderer::getInstancia().onResize(width, height);
+    logMensajes(window,"Resize callback called");
 }
 
 // - Esta función callback será llamada cada vez que se pulse una tecla
@@ -67,40 +107,45 @@ void key_callback ( GLFWwindow *window, int key, int scancode, int action, int m
     ImGuiIO& io = ImGui::GetIO();
 
     // Mapear teclas especiales
-    if (key == GLFW_KEY_LEFT)
+    if ( key == GLFW_KEY_LEFT ) {
         io.AddKeyEvent(ImGuiKey_LeftArrow, action == GLFW_PRESS);
+    }
 
-    if (key == GLFW_KEY_RIGHT)
+    if ( key == GLFW_KEY_RIGHT ) {
         io.AddKeyEvent(ImGuiKey_RightArrow, action == GLFW_PRESS);
+    }
 
-    if (key == GLFW_KEY_UP)
+    if ( key == GLFW_KEY_UP ) {
         io.AddKeyEvent(ImGuiKey_UpArrow, action == GLFW_PRESS);
+    }
 
-    if (key == GLFW_KEY_DOWN)
+    if ( key == GLFW_KEY_DOWN ) {
         io.AddKeyEvent(ImGuiKey_DownArrow, action == GLFW_PRESS);
+    }
 
-    if ( key == GLFW_KEY_ESCAPE) {
+    if ( key == GLFW_KEY_ESCAPE ) {
         io.AddKeyEvent(ImGuiKey_Escape, action == GLFW_PRESS);
-        if (action == GLFW_PRESS) {
+        if ( action == GLFW_PRESS ) {
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
     }
-    std::cout << "Key callback called" << std::endl;
+    logMensajes(window,"Key callback called");
 }
 
 // - Esta función callback será llamada cada vez que se pulse algún botón
 // del ratón sobre el área de dibujo OpenGL.
 void mouse_button_callback ( GLFWwindow *window, int button, int action, int mods ) {
-    if ( action == GLFW_PRESS ) {
-        std::cout << "Pulsado el boton: " << button << std::endl;
 
-        ImGuiIO& io = ImGui::GetIO ();
+    if ( action == GLFW_PRESS ) {
+        logMensajes(window,"Pulsado el boton: " + std::to_string(button));
+
+        ImGuiIO& io = ImGui::GetIO();
         io.AddMouseButtonEvent(button, true );
 
     } else if ( action == GLFW_RELEASE ) {
-        std::cout << "Soltado el boton: " << button << std::endl;
+        logMensajes(window,"Soltado el boton: " + std::to_string(button));
 
-        ImGuiIO& io = ImGui::GetIO ();
+        ImGuiIO& io = ImGui::GetIO();
         io.AddMouseButtonEvent(button, false );
     }
 }
@@ -109,9 +154,10 @@ void mouse_button_callback ( GLFWwindow *window, int button, int action, int mod
 // del ratón sobre el área de dibujo OpenGL.
     // El color de la ventana cambiará al mover la rueda
 void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset ) {
-    std::cout << "Movida la rueda del raton " << xoffset
-              << " Unidades en horizontal y " << yoffset
-              << " unidades en vertical" << std::endl;
+
+    logMensajes(window,"Movida la rueda del raton " + std::to_string(xoffset) +
+                            " unidades en horizontal y " + std::to_string(yoffset) +
+                            " unidades en vertical");
 
     // ImGui necesita recibir el evento
     ImGuiIO& io = ImGui::GetIO();
@@ -170,6 +216,11 @@ int main() {
         return -3;
     }
 
+    // Puntero de usuario de la ventana apunta a un vector de string que almacena los mensajes
+    // que se mostraran en la terminal
+    std::vector<std::string> mensajes;
+    glfwSetWindowUserPointer(window,&mensajes);
+
     // Inicialización de ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -182,10 +233,10 @@ int main() {
 
     // - Interrogamos a OpenGL para que nos informe de las propiedades del contexto 3D construido.
         // Aunque usa OpenGL no lo añado a Renderer porque es información del contexto
-    std::cout << glGetString(GL_RENDERER) << std::endl
-              << glGetString(GL_VENDOR) << std::endl
-              << glGetString(GL_VERSION) << std::endl
-              << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+    logMensajes(window,std::string(reinterpret_cast<const char*>(glGetString(GL_RENDERER))));
+    logMensajes(window,std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
+    logMensajes(window,std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+    logMensajes(window,std::string(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
 
     // - Registramos los callbacks que responderán a los eventos principales
     glfwSetWindowRefreshCallback( window, window_refresh_callback );

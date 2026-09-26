@@ -48,6 +48,12 @@ namespace PAG {
 
             // Método para inicializar OpenGL
             void init();
+
+            // Método para obtener el color de fondo
+            Color& getColorFondo();
+
+            // Método para cambiar el color del fondo
+            void cambiarColor(Color c);
     };
 }
 

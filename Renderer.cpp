@@ -48,15 +48,25 @@ namespace PAG {
         fondo.g = std::clamp((fondo.g += desp), cota_inf, cota_sup);
         fondo.b = std::clamp((fondo.b += desp), cota_inf, cota_sup);
 
-        glClearColor(fondo.r, fondo.g, fondo.b, fondo.a); // Colorear
+        cambiarColor(fondo); // Colorear
     }
 
     // Método para inicializar OpenGL
     void Renderer::init() {
         // Inicializa el color del fondo
-        glClearColor(fondo.r, fondo.g, fondo.b, fondo.a);
+        cambiarColor(fondo);
 
         // Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de dibujar.
         glEnable(GL_DEPTH_TEST);
+    }
+
+    // Método para obtener el color de fondo
+    Color& Renderer::getColorFondo() {
+        return fondo;
+    }
+
+    // Método para cambiar el color del fondo
+    void Renderer::cambiarColor(Color c) {
+        glClearColor(c.r, c.g, c.b, c.a);
     }
 }

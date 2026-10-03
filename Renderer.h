@@ -37,6 +37,8 @@ namespace PAG {
             GLuint idVBO = 0;   // Identificador del vertex buffer object
             GLuint idIBO = 0;   // Identificador del index buffer object
 
+            GLuint idVBOColor = 0; // Identificador del vertex buffer object del color
+
         public:
 
             // Destructor

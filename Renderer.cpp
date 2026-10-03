@@ -17,7 +17,31 @@ namespace PAG {
     }
 
     // Destructor
-    Renderer::~Renderer() {}
+    Renderer::~Renderer() {
+        if ( idVS != 0 ){
+            glDeleteShader ( idVS );
+        }
+
+        if ( idFS != 0 ){
+            glDeleteShader ( idFS );
+        }
+
+        if ( idSP != 0 ){
+            glDeleteProgram ( idSP );
+        }
+
+        if ( idVBO != 0 ){
+            glDeleteBuffers ( 1, &idVBO );
+        }
+
+        if ( idIBO != 0 ){
+            glDeleteBuffers ( 1, &idIBO );
+        }
+
+        if ( idVAO != 0 ){
+            glDeleteVertexArrays ( 1, &idVAO );
+        }
+    }
 
     // Método para obtener la instancia
     PAG::Renderer &PAG::Renderer::getInstancia() {
@@ -33,6 +57,12 @@ namespace PAG {
     // Método para hacer el refresco de la escena
     void Renderer::refrescar() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
+        glUseProgram ( idSP );
+        glBindVertexArray ( idVAO );
+        glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
+        glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr );
     }
 
     // Método para cambiar el tamaño de la ventana
@@ -61,6 +91,8 @@ namespace PAG {
 
         // Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de dibujar.
         glEnable(GL_DEPTH_TEST);
+        // Activa el anti-aliasing
+        glEnable(GL_MULTISAMPLE);
     }
 
     // Método para obtener el color de fondo

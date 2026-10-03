@@ -248,8 +248,12 @@ int main() {
     // Inicialización de la intancia
     PAG::Renderer::getInstancia().init();
 
-    PAG::Renderer::getInstancia().creaShaderProgram();
-    PAG::Renderer::getInstancia().creaModelo();
+    try {
+        PAG::Renderer::getInstancia().creaShaderProgram();
+        PAG::Renderer::getInstancia().creaModelo();
+    } catch (const std::exception& e) {
+        logMensajes(window,e.what());
+    }
 
     // - Ciclo de eventos de la aplicación. La condición de parada es que la
     // ventana principal deba cerrarse. Por ejemplo, si el usuario pulsa el

@@ -129,7 +129,7 @@ namespace PAG {
             // Comprobación
         if (idVS == 0) {
             /* Ha ocurrido un error al intentar crear el shader.*/
-            std::cerr << "[ERROR] Error al crear el shader." << std::endl;
+            throw std::runtime_error("[ERROR] Error al crear el shader.");
         }
 
         const GLchar *fuenteVS = miVertexShader.c_str();
@@ -147,7 +147,7 @@ namespace PAG {
             if (tamLog > 0) {
                 std::string log(tamLog, '\0');
                 glGetShaderInfoLog(idVS, tamLog, nullptr, &log[0]);
-                std::cerr << "[ERROR] Error al compilar el Vertex Shader:\n" << log << std::endl;
+                throw std::runtime_error("[ERROR] Error al compilar el Vertex Shader:\n"+log);
             }
         }
 
@@ -157,7 +157,7 @@ namespace PAG {
             // Comprobación
         if (idFS == 0) {
             /* Ha ocurrido un error al intentar crear el shader.*/
-            std::cerr << "[ERROR] Error al crear el shader." << std::endl;
+            throw std::runtime_error("[ERROR] Error al crear el shader.");
         }
 
         const GLchar *fuenteFS = miFragmentShader.c_str();
@@ -175,7 +175,7 @@ namespace PAG {
             if (tamLog > 0) {
                 std::string log(tamLog, '\0');
                 glGetShaderInfoLog(idFS, tamLog, nullptr, &log[0]);
-                std::cerr << "[ERROR] Error al compilar el Fragment Shader:\n" << log << std::endl;
+                throw std::runtime_error("[ERROR] Error al compilar el Fragment Shader:\n"+log);
             }
         }
 
@@ -205,7 +205,7 @@ namespace PAG {
                 delete[] mensajeFormatoC;
                 mensajeFormatoC = nullptr;
 
-                std::cerr << mensaje << std::endl;
+                throw std::runtime_error(mensaje);
             }
 
         }
@@ -223,55 +223,55 @@ namespace PAG {
         // Creación y configuración del VAO
         glGenVertexArrays(1, &idVAO );
         if (idVAO == 0) {
-            std::cerr << "[ERROR] No se pudo generar el VAO." << std::endl;
+            throw std::runtime_error("[ERROR] No se pudo generar el VAO.");
         }
 
         glBindVertexArray(idVAO);
         if (glGetError() != GL_NO_ERROR) {
-            std::cerr << "[ERROR] Fallo al hacer glBindVertexArray." << std::endl;
+            throw std::runtime_error("[ERROR] Fallo al hacer glBindVertexArray.");
         }
 
         // Creación y carga dle VBO
         glGenBuffers(1, &idVBO);
         if (idVBO == 0) {
-            std::cerr << "[ERROR] No se pudo generar el VBO." << std::endl;
+            throw std::runtime_error("[ERROR] No se pudo generar el VBO.");
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, idVBO);
         if (glGetError() != GL_NO_ERROR) {
-            std::cerr << "[ERROR] Fallo al hacer glBindBuffer(GL_ARRAY_BUFFER)." << std::endl;
+            throw std::runtime_error("[ERROR] Fallo al hacer glBindBuffer(GL_ARRAY_BUFFER).");
         }
 
         glBufferData(GL_ARRAY_BUFFER, 9*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
         if (glGetError() != GL_NO_ERROR) {
-            std::cerr << "[ERROR] Fallo al cargar datos en el VBO (glBufferData)." << std::endl;
+            throw std::runtime_error("[ERROR] Fallo al cargar datos en el VBO (glBufferData).");
         }
 
         // Configuración del Vertex Attirb
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), nullptr);
         if (glGetError() != GL_NO_ERROR) {
-            std::cerr << "[ERROR] Fallo en glVertexAttribPointer." << std::endl;
+            throw std::runtime_error("[ERROR] Fallo en glVertexAttribPointer.");
         }
 
         glEnableVertexAttribArray(0);
         if (glGetError() != GL_NO_ERROR) {
-            std::cerr << "[ERROR] Fallo en glEnableVertexAttribArray(0)." << std::endl;
+            throw std::runtime_error("[ERROR] Fallo en glEnableVertexAttribArray(0).");
         }
 
         // Crear y cargar el IBO
         glGenBuffers (1, &idIBO);
         if (idIBO == 0) {
-            std::cerr << "[ERROR] No se pudo generar el IBO." << std::endl;
+            throw std::runtime_error("[ERROR] No se pudo generar el IBO.");
         }
 
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, idIBO);
         if (glGetError() != GL_NO_ERROR) {
-            std::cerr << "[ERROR] Fallo al hacer glBindBuffer(GL_ELEMENT_ARRAY_BUFFER)." << std::endl;
+            throw std::runtime_error("[ERROR] Fallo al hacer glBindBuffer(GL_ELEMENT_ARRAY_BUFFER).");
         }
 
         glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3*sizeof(GLuint), indices, GL_STATIC_DRAW);
         if (glGetError() != GL_NO_ERROR) {
-            std::cerr << "[ERROR] Fallo al cargar datos en el IBO (glBufferData)." << std::endl;
+            throw std::runtime_error("[ERROR] Fallo al cargar datos en el IBO (glBufferData).");
         }
     }
 }

@@ -248,6 +248,7 @@ int main() {
     // Inicialización de la intancia
     PAG::Renderer::getInstancia().init();
 
+    // Creación de los shaders y el modelo
     try {
         PAG::Renderer::getInstancia().creaShaderProgram("../pag03");
         PAG::Renderer::getInstancia().creaModelo();

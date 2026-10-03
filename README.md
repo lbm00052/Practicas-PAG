@@ -1,3 +1,51 @@
+# Práctica 3
+### Pregunta: 
+**Si redimensionas la ventana de la aplicación, verás que el triángulo
+no permanece igual, sino que se deforma al mismo tiempo que la ventana. 
+¿A qué crees que se debe este comportamiento?**
+
+Este comportamiento se debe a que estamos dibujando directamente en coordenadas
+normalizadas sin aplicar ninguna matriz de proyección. El viewport escala los 
+valores X e Y según el tamaño de la ventana, y como la relación de aspecto cambia,
+el triángulo se deforma.
+
+## Mejoras implementadas en esta práctica
+
+En esta práctica se han añadido las siguientes mejoras:
+
+### 1. Implementación de los shaders en la clase `PAG::Renderer`
+
+Se han añadido los shader siguiendo las indicaciones del documento, incorporando
+los identificadores necesarios a la clase como atributos privados. 
+
+Además se han añadido los métodos:
+- `crearShaderProgram()`: crea los shaders, los compila y los enlaza al shader program.
+- `creaModelo()`: crea la geometría usando arrays locales para almacenar vértices.
+
+Además, en cada uno de estos métodos, se realiza comprobación de errores y 
+lanzamiento de excepciones capturadas en el main para mostrarlas en la terminal
+de la ventana.
+
+### 2. Carga del código GLSL desde archivos externos
+
+Se ha movido el código de los shaders a dos archivos: 
+`pag03-vs.glsl` y `pag03-fs.glsl`; por lo que ahora el método `creaShaderProgram()`
+recibe un parametro con el inicio de la ruta donde se almacenan dichos archivos y 
+los carga automáticamente.
+
+### 3. Adición de un segundo atributo por vértice
+
+Se ha implementado el apartado opcional añadiendo color a cada vértice de dos 
+formas:
+
+- **VBOs no entrelazados**: un VBO para posiciones y uno independiente para los 
+colores.
+- **VBO entrelazado**: un único VBO con posiciones y colores intercalados.
+
+Ambas versiones se encuentran en el código. El resultado de aplicar una u otra es
+un triángulo con un gradiente de color.
+
+
 # Práctica 2
 En esta práctica se han implementado dos mejoras principales en la aplicación:
 ### 1. Adición de la clase `PAG::Renderer` para desacoplar OpenGL del archivo `main.cpp`.

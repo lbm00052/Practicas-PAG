@@ -64,7 +64,7 @@ namespace PAG {
             void cambiarColor(Color c);
 
             //Método para crear, compilar y enlazar el shader program
-            void creaShaderProgram();
+            void creaShaderProgram(const std::string& ruta);
 
             // Método para crear el VAO para el modelo a renderizar
             void creaModelo();

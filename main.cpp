@@ -249,7 +249,7 @@ int main() {
     PAG::Renderer::getInstancia().init();
 
     try {
-        PAG::Renderer::getInstancia().creaShaderProgram();
+        PAG::Renderer::getInstancia().creaShaderProgram("../pag03");
         PAG::Renderer::getInstancia().creaModelo();
     } catch (const std::exception& e) {
         logMensajes(window,e.what());

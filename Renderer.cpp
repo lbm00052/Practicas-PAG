@@ -4,6 +4,8 @@
 #include "Renderer.h"
 #include <algorithm>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 namespace PAG {
 
@@ -105,23 +107,28 @@ namespace PAG {
         glClearColor(c.r, c.g, c.b, c.a);
     }
 
+    //Método auxiliar para cargar los archivos GLSL
+    std::string cargarArchivoGLSL(const std::string& ruta) {
+        std::ifstream archivo;
+        archivo.open(ruta);
+
+        if (!archivo.is_open()) {
+            throw std::runtime_error("[ERROR] No se pudo abrir el archivo GLSL: " + ruta);
+        }
+
+        std::stringstream streamShader;
+        streamShader << archivo.rdbuf();
+        archivo.close();
+
+        return streamShader.str();
+    }
+
     /**
      * Método para crear, compilar y enlazar el shader program
      */
-    void PAG::Renderer::creaShaderProgram() {
-        std::string miVertexShader =
-                "#version 410\n"
-                "layout (location = 0) in vec3 posicion;\n"
-                "void main ()\n"
-                "{  gl_Position = vec4 ( posicion, 1 );\n"
-                "}\n";
-
-        std::string miFragmentShader =
-                "#version 410\n"
-                "out vec4 colorFragmento;\n"
-                "void main ()\n"
-                "{  colorFragmento = vec4 ( 1.0, .4, .2, 1.0 );\n"
-                "}\n";
+    void PAG::Renderer::creaShaderProgram(const std::string& ruta) {
+        std::string miVertexShader = cargarArchivoGLSL(ruta + "-vs.glsl");
+        std::string miFragmentShader = cargarArchivoGLSL(ruta + "-fs.glsl");
 
         // Compila el Vertex Shader
         idVS = glCreateShader(GL_VERTEX_SHADER);

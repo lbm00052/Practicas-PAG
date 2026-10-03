@@ -29,6 +29,14 @@ namespace PAG {
             // Color para el fondo de la instancia
             Color fondo;
 
+            // Identificadores de la geometría y los shaders
+            GLuint idVS = 0;    // Identificador del vertex shader
+            GLuint idFS = 0;    // Identificador del fragment shader
+            GLuint idSP = 0;    // Identificador del shader program
+            GLuint idVAO = 0;   // Identificador del vertex array object
+            GLuint idVBO = 0;   // Identificador del vertex buffer object
+            GLuint idIBO = 0;   // Identificador del index buffer object
+
         public:
 
             // Destructor
@@ -54,6 +62,12 @@ namespace PAG {
 
             // Método para cambiar el color del fondo
             void cambiarColor(Color c);
+
+            //Método para crear, compilar y enlazar el shader program
+            void creaShaderProgram();
+
+            // Método para crear el VAO para el modelo a renderizar
+            void creaModelo();
     };
 }
 

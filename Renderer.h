@@ -44,7 +44,10 @@ namespace PAG {
             // Destructor
             virtual ~Renderer();
 
-            // Devuelvo el espacio de memoria mediante referencia (para acceder al objeto sin copiarlo)
+            // Método para activar el destructor
+            static void destruirInstancia();
+
+            // Método para obtener la instancia
             static Renderer& getInstancia();
 
             // Método para hacer el refresco de la escena

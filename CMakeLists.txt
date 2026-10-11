@@ -14,6 +14,8 @@ file(GLOB IMGUI_FILES imGui/src/*.cpp) # Código fuente de imGui
 add_executable( ${PROJECT_NAME} ${MY_FILES} ${GLAD_FILES} ${IMGUI_FILES}
         Renderer.cpp
         Renderer.h
+        GUI.cpp
+        GUI.h
 )
 
 # Indica directorios (adicionales a los por defecto) para buscar includes

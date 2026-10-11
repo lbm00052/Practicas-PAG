@@ -1,6 +1,5 @@
 #include <iostream>
 #include <glad/glad.h>
-#include <GL/gl.h>
 #include "Renderer.h"
 #include <algorithm>
 #include <string>
@@ -16,6 +15,12 @@ namespace PAG {
     Renderer::Renderer() {
         // Se inicializa el color del fondo en gris
         fondo = {0.6, 0.6, 0.6, 1};
+    }
+
+    // Método para activar el destructor
+    void Renderer::destruirInstancia(){
+        delete instancia;
+        instancia = nullptr;
     }
 
     // Destructor
@@ -50,6 +55,7 @@ namespace PAG {
     }
 
     // Método para obtener la instancia
+    // Devuelvo el espacio de memoria mediante referencia (para acceder al objeto sin copiarlo)
     PAG::Renderer &PAG::Renderer::getInstancia() {
 
         // Si aun no existe la instancia, se crea.
@@ -224,69 +230,9 @@ namespace PAG {
     }
 
     /**
- * Método para crear el VAO para el modelo a renderizar
- */
+     * Método para crear el VAO para el modelo a renderizar
+     */
     void PAG::Renderer::creaModelo( ){
-        /* CÓDIGO ANTERIOR ================
-        GLfloat vertices[] = { -.5, -.5, 0,
-                              .5, -.5, 0,
-                              .0,  .5, 0 };
-        GLuint indices[] = { 0, 1, 2 };
-
-        // Creación y configuración del VAO
-        glGenVertexArrays(1, &idVAO );
-        if (idVAO == 0) {
-            throw std::runtime_error("[ERROR] No se pudo generar el VAO.");
-        }
-
-        glBindVertexArray(idVAO);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al hacer glBindVertexArray.");
-        }
-
-        // Creación y carga dle VBO
-        glGenBuffers(1, &idVBO);
-        if (idVBO == 0) {
-            throw std::runtime_error("[ERROR] No se pudo generar el VBO.");
-        }
-
-        glBindBuffer(GL_ARRAY_BUFFER, idVBO);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al hacer glBindBuffer(GL_ARRAY_BUFFER).");
-        }
-
-        glBufferData(GL_ARRAY_BUFFER, 9*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al cargar datos en el VBO (glBufferData).");
-        }
-
-        // Configuración del Vertex Attirb
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), nullptr);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo en glVertexAttribPointer.");
-        }
-
-        glEnableVertexAttribArray(0);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo en glEnableVertexAttribArray(0).");
-        }
-
-        // Crear y cargar el IBO
-        glGenBuffers (1, &idIBO);
-        if (idIBO == 0) {
-            throw std::runtime_error("[ERROR] No se pudo generar el IBO.");
-        }
-
-        glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, idIBO);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al hacer glBindBuffer(GL_ELEMENT_ARRAY_BUFFER).");
-        }
-
-        glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3*sizeof(GLuint), indices, GL_STATIC_DRAW);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al cargar datos en el IBO (glBufferData).");
-        }*/
-
         /*
         // VERSIÓN NO ENTRELAZADA ================================
         // Vértices (posición)

@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include "Renderer.h"
 #include <algorithm>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace PAG {
 
@@ -61,6 +62,19 @@ namespace PAG {
         // Activación del shader program y dibujo del triángulo
         glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
         glUseProgram ( shaderProgram.getId() ); // idSP
+
+        // Obtener la matriz de la vista de la cámara y la de proyección
+        glm::mat4 view = camera.getViewMatrix();
+        glm::mat4 projection = camera.getProjectionMatrix(1024.0f/576.0f);
+
+        // Obtener la localización del uniform "view" y "projection"
+        GLint idView = glGetUniformLocation(shaderProgram.getId(),"view");
+        GLint idProjection = glGetUniformLocation(shaderProgram.getId(),"projection");
+
+        // Enviar las matrices al shader
+        glUniformMatrix4fv(idView, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(idProjection, 1, GL_FALSE, glm::value_ptr(projection));
+
         glBindVertexArray ( idVAO );
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
         glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr );
@@ -109,6 +123,11 @@ namespace PAG {
     // Método para obtener el shaderProgram
     ShaderProgram &Renderer::getShaderProgram() {
         return shaderProgram;
+    }
+
+    // Método para obtener la cámara
+    Camera &Renderer::getCamera() {
+        return camera;
     }
 
     /**

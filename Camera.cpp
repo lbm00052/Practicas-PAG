@@ -17,6 +17,11 @@ namespace PAG {
         return glm::lookAt(pos, lookAt, up);
     }
 
+    // Obtener la matriz de proyección
+    glm::mat4 Camera::getProjectionMatrix(float aspecto) const {
+        return glm::perspective(glm::radians(45.0f), aspecto, 0.1f, 100.f);
+    }
+
     // Getter de la posición
     glm::vec3 &Camera::getPos() {
         return pos;

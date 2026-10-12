@@ -28,6 +28,9 @@ namespace PAG {
             // Obtiene la matriz de vista
             glm::mat4 getViewMatrix() const;
 
+            // Obtener la matriz de proyección
+            glm::mat4 getProjectionMatrix(float aspecto) const;
+
             // Getters de los atributos
             glm::vec3& getPos();
             glm::vec3& getLookAt();

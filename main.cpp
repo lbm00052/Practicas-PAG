@@ -153,7 +153,7 @@ int main() {
         // del modelo se encontrara después de la creación de del shader program y este último
         // fallara, no se crearía el modelo nunca
         PAG::Renderer::getInstancia().creaModelo();
-        PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag03");
+        PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag05");
     } catch (const std::exception& e) {
         PAG::GUI::getInstancia().addMensaje(e.what());
     }

@@ -2,6 +2,7 @@
 #define PRACTICA1_RENDERER_H
 
 #include "ShaderProgram.h"
+#include "Camera.h"
 
 // Espacio de nombres para las prácticas de PAG
 namespace PAG {
@@ -33,6 +34,9 @@ namespace PAG {
 
             // Atributo para gestionar el shader program
             ShaderProgram shaderProgram;
+
+            // Cámara virtual de la escena
+            Camera camera;
 
             // Identificadores de la geometría
             GLuint idVAO = 0;   // Identificador del vertex array object
@@ -72,6 +76,9 @@ namespace PAG {
 
             //Método para crear, compilar y enlazar el shader program
             ShaderProgram& getShaderProgram();
+
+            // Método para obtener la cámara
+            Camera& getCamera();
 
             // Método para crear el VAO para el modelo a renderizar
             void creaModelo();

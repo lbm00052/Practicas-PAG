@@ -12,7 +12,7 @@ namespace PAG {
 
         private:
 
-            // Identificadores de la geometría y los shaders
+            // Identificadores de los shaders
             GLuint idVS = 0;    // Identificador del vertex shader
             GLuint idFS = 0;    // Identificador del fragment shader
             GLuint idSP = 0;    // Identificador del shader program

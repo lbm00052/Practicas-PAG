@@ -1,3 +1,66 @@
+# Práctica 4
+
+### ¿Cómo se ha realizado el desacoplamiento?
+
+Para realizar el desacoplamiento se ha creado la clase `ShaderProgram`, que 
+se encarga de la gestión de todo lo relacionado con shaders.
+
+Dicha clase está compuesta por los identificadores de los shaders, dispone de
+un constructor por defecto, un destructor, un getter al identificador del 
+shader program y un método para crear, compilar y enlazar el shader program.
+
+Así, la funcionalidad relacionada con la gestión de los shaders, que 
+inicialmente se encontraba en `Renderer`, se ha trasladado a la nueva clase.
+
+Para permitir la interacción entre ambas clases, se ha añadido el atributo 
+`shaderProgram` en la clase `Renderer`, además de un getter que permite usar
+los servicios de la nueva clase desde el renderer.
+
+Como resultado, `Renderer` solo mantiene responsabilidades relacionadas con
+el renderizado y la gestión de la geometría y `ShaderProgram` se encarga de 
+la creación y gestión de los shaders.
+
+## Mejoras implementadas en esta práctica
+
+En esta práctica se han añadido las siguiente mejoras:
+
+### 1. Desacoplamiento de la clase ImGui y pequeña corrección en Renderer
+
+Para desacoplar la gestión de ImGui se ha creado la clase `GUI`, que se
+encargará de encapsular toda la funcionalidad relacionada con la interfaz
+gráfica, siguiendo el patrón de diseño singleton.
+
+Esta clase gestiona la inicialización y liberación de recursos de ImGui, la 
+creación de nuevos frames, el renderizado de la interfaz y el procesamiento
+de eventos de entrada.
+
+Ahora, el código relacionado con ImGui que se encontraba disperso a lo largo
+de `main.cpp` ha quedado centralizado en esta clase, mejorando la organización.
+
+No obstante, la clase mantiene dependencias con `GLFW` y `Renderer`, ya que
+necesita recibir los eventos generados por la ventana y acceder a ciertas 
+funcionalidades del renderizado para modificar parámetros de la aplicación
+desde la interfaz gráfica. 
+
+Respecto a la correción en Renderer, no estaba segura si se realizaba 
+correctamente la liberación de recursos, por lo que se ha agregado una nueva
+función que activa el destructor al final de `main.cpp`.
+
+### 2. Desacoplamiento de la gestión de shader programs de la clase Renderer
+
+Dicho desacoplamiento se ha explicado anteriormente en 
+"¿Cómo se ha realizado el desacoplamiento?"
+
+### 3. Adición de una ventana para indicar el nombre base de los shaders
+
+Se ha añadido una nueva ventana de ImGui llamada "Shader Program", cuyo objetivo 
+es permitir la carga dinámica de shader programs durante la ejecución. 
+
+La ventana incorpora un campo de texto en el que se puede introducir la ruta 
+base de los shaders y un botón "Cargar" encargado de iniciar el proceso de carga. 
+Al pulsar dicho botón, se invoca el método `crearShaderProgram` de la clase
+`ShaderProgram`.
+
 # Práctica 3
 ### Pregunta: 
 **Si redimensionas la ventana de la aplicación, verás que el triángulo

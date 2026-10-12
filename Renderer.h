@@ -31,9 +31,10 @@ namespace PAG {
             // Color para el fondo de la instancia
             Color fondo;
 
+            // Atributo para gestionar el shader program
             ShaderProgram shaderProgram;
 
-            // Identificadores de la geometría y los shaders
+            // Identificadores de la geometría
             GLuint idVAO = 0;   // Identificador del vertex array object
             GLuint idVBO = 0;   // Identificador del vertex buffer object
             GLuint idIBO = 0;   // Identificador del index buffer object

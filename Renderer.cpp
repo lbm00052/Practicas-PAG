@@ -55,6 +55,7 @@ namespace PAG {
     void Renderer::refrescar() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Si existe un shader program se dibuja el modelo, sino no.
         if(shaderProgram.getId() == 0) return;
 
         // Activación del shader program y dibujo del triángulo

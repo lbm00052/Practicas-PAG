@@ -18,6 +18,8 @@ add_executable( ${PROJECT_NAME} ${MY_FILES} ${GLAD_FILES} ${IMGUI_FILES}
         GUI.h
         ShaderProgram.cpp
         ShaderProgram.h
+        Camera.cpp
+        Camera.h
 )
 
 # Indica directorios (adicionales a los por defecto) para buscar includes

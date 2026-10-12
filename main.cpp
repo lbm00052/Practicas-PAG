@@ -148,8 +148,8 @@ int main() {
 
     // Creación de los shaders y el modelo
     try {
-        PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag03");
         PAG::Renderer::getInstancia().creaModelo();
+        PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag03");
     } catch (const std::exception& e) {
         PAG::GUI::getInstancia().addMensaje(e.what());
     }

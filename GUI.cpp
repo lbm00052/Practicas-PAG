@@ -98,6 +98,25 @@ namespace PAG {
             PAG::Renderer::getInstancia().cambiarColor(c);
         }
         ImGui::End();
+
+        // VENTANA DE ELECCIÓN DE SHADER
+        ImGui::SetNextWindowPos(ImVec2(10,600), ImGuiCond_Once);
+        if (ImGui::Begin("Shader Program")){
+            ImGui::SetWindowFontScale(1.0f);
+
+            ImGui::InputText("##", rutaShader,sizeof(rutaShader));
+
+            if(ImGui::Button("Cargar")){
+                try{
+                    addMensaje("Cargando: " + std::string(rutaShader));
+                    PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram(rutaShader);
+                    addMensaje("Shader cargado correctamente");
+                } catch (const std::exception& e) {
+                    addMensaje(e.what());
+                }
+            }
+        }
+        ImGui::End();
     }
 
     // Finalización/renderizado de ImGui
@@ -134,8 +153,17 @@ namespace PAG {
                 io.AddKeyEvent(ImGuiKey_DownArrow, action == GLFW_PRESS);
                 break;
 
+            case GLFW_KEY_DELETE:
+                io.AddKeyEvent(ImGuiKey_Delete,action == GLFW_PRESS);
+                break;
+
+            case GLFW_KEY_BACKSPACE:
+                io.AddKeyEvent(ImGuiKey_Backspace, action == GLFW_PRESS);
+                break;
+
             case GLFW_KEY_ESCAPE:
                 io.AddKeyEvent(ImGuiKey_Escape, action == GLFW_PRESS);
+                break;
         }
     }
 

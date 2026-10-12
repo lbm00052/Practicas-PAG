@@ -25,6 +25,10 @@ namespace PAG {
             // Constructor
             GUI();
 
+            // Ruta de los archivos del shader
+                // Es char porque GUI trabaja con buffers de caracteres
+            char rutaShader[256] = "../pag03";
+
         public:
 
             // Destructor

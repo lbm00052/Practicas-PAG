@@ -49,6 +49,23 @@ namespace PAG {
      * Método para crear, compilar y enlazar el shader program
      */
     void ShaderProgram::creaShaderProgram(const std::string &ruta) {
+
+        // Limpiamos las variables por si antes se le había asignado algo
+        if (idVS != 0) {
+            glDeleteShader(idVS);
+            idVS=0;
+        }
+
+        if (idFS != 0) {
+            glDeleteShader(idFS);
+            idFS=0;
+        }
+
+        if (idSP != 0) {
+            glDeleteProgram(idSP);
+            idSP=0;
+        }
+
         std::string miVertexShader = cargarArchivoGLSL(ruta + "-vs.glsl");
         std::string miFragmentShader = cargarArchivoGLSL(ruta + "-fs.glsl");
 

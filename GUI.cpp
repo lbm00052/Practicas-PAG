@@ -128,9 +128,11 @@ namespace PAG {
             static int movimiento = 0;
             const char* movimientos[] = {"Dolly","Crane","Pan","Tilt","Orbit","Zoom"};
 
-            if (ImGui::Combo("##",&movimiento,movimientos,IM_ARRAYSIZE(movimientos))) {
+            PAG::Renderer& render = Renderer::getInstancia();
+            PAG::Camera& camera = render.getCamera();
 
-                PAG::Renderer& render = Renderer::getInstancia();
+            // Selector
+            if (ImGui::Combo("##",&movimiento,movimientos,IM_ARRAYSIZE(movimientos))) {
 
                 switch (movimiento) {
                     case 0:
@@ -157,6 +159,113 @@ namespace PAG {
                         render.setMovimientoActual(MovimientosCamara::ZOOM);
                         break;
                 }
+            }
+
+            ImGui::Separator();
+
+            // Botones según selector
+            switch (render.getMovimientoActual()) {
+                case MovimientosCamara::DOLLY:
+                    ImGui::Text("Direccion");
+
+                    if(ImGui::Button("^ Back ^")){
+                        camera.dolly(0.0f,-0.1f);
+                    }
+
+                    if(ImGui::Button("<- Left")){
+                        camera.dolly(-0.1f,0.0f);
+                    }
+
+                    ImGui::SameLine();
+
+                    if(ImGui::Button("Right ->")){
+                        camera.dolly(0.1f,0.0f);
+                    }
+
+                    if(ImGui::Button("v Front v")){
+                        camera.dolly(0.0f,0.1f);
+                    }
+
+                    break;
+
+                case MovimientosCamara::CRANE:
+                    ImGui::Text("Direccion");
+
+                    if(ImGui::Button("^ Up ^")){
+                        camera.crane(0.1f);
+                    }
+
+                    if(ImGui::Button("v Down v")){
+                        camera.crane(-0.1f);
+                    }
+
+                    break;
+
+                case MovimientosCamara::PAN:
+                    ImGui::Text("Direccion");
+
+                    if(ImGui::Button("<- Left")) {
+                        camera.pan(0.1f);
+                    }
+
+                    ImGui::SameLine();
+
+                    if(ImGui::Button("Right ->")) {
+                        camera.pan(-0.1f);
+                    }
+
+                    break;
+
+                case MovimientosCamara::TILT:
+                    ImGui::Text("Direccion");
+
+                    if(ImGui::Button("^ Up ^")) {
+                        camera.tilt(0.1f);
+                    }
+
+                    if(ImGui::Button("v Down v")) {
+                        camera.tilt(-0.1f);
+                    }
+
+                    break;
+
+                case MovimientosCamara::ORBIT:
+                    ImGui::Text("Latitud");
+
+                    if(ImGui::Button("^ North ^")) {
+                        camera.orbit(0.0f, 0.1f);
+                    }
+
+                    if(ImGui::Button("v South v")) {
+                        camera.orbit(0.0f, -0.1f);
+                    }
+
+                    ImGui::Spacing();
+
+                    ImGui::Text("Longitud");
+
+                    if(ImGui::Button("<- West")) {
+                        camera.orbit(-0.1f, 0.0f);
+                    }
+
+                    ImGui::SameLine();
+
+                    if(ImGui::Button("East ->")) {
+                        camera.orbit(0.1f, 0.0f);
+                    }
+
+                    break;
+
+                case MovimientosCamara::ZOOM:
+                    ImGui::Text("Angulo");
+
+                    float fovActual = camera.getFov();
+
+                    if(ImGui::SliderFloat("##Zoom",&fovActual,10.0f,120.0f)) {
+                        camera.setFov(fovActual);
+                    }
+
+                    break;
             }
         }
         ImGui::End();

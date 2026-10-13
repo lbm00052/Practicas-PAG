@@ -37,6 +37,16 @@ namespace PAG {
         return up;
     }
 
+    // Getter para el campo de visión
+    float Camera::getFov() const {
+        return fov;
+    }
+
+    // Setter para el campo de visión
+    void Camera::setFov(float nuevoFov) {
+        fov = glm::clamp(nuevoFov, 10.0f,120.0f);
+    }
+
     // MOVIMIENTOS DE LA CÁMARA ==============
 
     void Camera::dolly(float dx, float dz) {

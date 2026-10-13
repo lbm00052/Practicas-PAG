@@ -47,6 +47,11 @@ namespace PAG {
             glm::vec3& getLookAt();
             glm::vec3& getUp();
 
+            // Getter para el campo de visión
+            float getFov() const;
+            // Setter para el campo de visión
+            void setFov(float nuevoFov);
+
             // Movimientos de la cámara
             void dolly(float dx, float dz);
             void crane(float dy);

@@ -1,3 +1,128 @@
+# Práctica 5
+
+## Mejoras implementadas en esta práctica
+
+En esta práctica se han implementado las siguientes mejoras:
+
+### Soporte para la cámara virtual
+
+Para añadir soporte para la cámara virtual se ha creado una nueva clase 
+llamada `Camera`, encargada de encapsular toda la información y operaciones
+relacionadas con la cámara.
+
+La cámara almacena:
+
+- `pos`: posición de la cámara en el espacio.
+- `lookAt`: punto al que mira la cámara.
+- `up`: vector vertical de la cámara.
+- `fov`: campo de visión.
+
+Además, proporciona métodos para obtener las matrices de visión y proyección
+mediante la biblioteca GLM. Estas matrices son necesarias para aplicar las 
+transformaciones de visión y proyección en el pipeline gráfico. Durante el 
+proceso de refresco se obtienen dichas matrices desde la cámara y posteriormente
+ambas se envían al shader mediante uniforms `view` y `projection`, permitiendo que 
+OpenGL aplique las transformaciones de visión y proyección antes del proceso 
+de rasterización y pueda transformar correctamente la geometría 
+según la posición y orientación actuales de la cámara.
+
+#### Modificación de los shaders
+
+Para poder usar la cámara ha sido necesario modificar el vertex shader 
+incorporando dos nuevas matrices `uniform`:
+
+- La matriz `view` representa la transformación de visión generada por la cámara 
+a partir de su posición, del punto al que mira y de su vector vertical.
+- La matriz `projection` representa la transformación de proyección en perspectiva
+generada a partir del campo de visión de la cámara.
+
+Para que cualquier modificación realizada sobre la cámara afecte directamente a
+la visualización de la escena, la posción de cada vértice se transforma mediante
+ambas matrices.
+
+El fragment shader no ha necesitado muchos cambios, solo se ha mantenido la 
+interpolación y la visualización del color asociado a cada vértice.
+
+### Integración de la cámara con Renderer
+
+La cámara se ha integrado dentro de la clase `Renderer`, que mantiene una 
+instancia propia llamada `camera`. De esta forma, el Renderer actúa como 
+coordinador principal de la aplicación. 
+
+Para poder acceder a la cámara, se ha implementado un getter. Además, `Renderer`
+también almacena el movimiento actual de la cámara en `movimientoActual` lo que
+permite coordinar la interacción entre la interfaz gráfica y la cámara.
+
+### Implementación de los movimientos de la cámara
+
+Para dar movimiento a la cámara, se ha definido un `enum` para identificar los
+distintos movimientos disponibles, simplificando la selección y ejecución del 
+movimiento activo. La lógica asociada a cada uno de estos movimientos se 
+encuentra implementada en la clase `Camera`.
+
+Dichos movimientos deben ser seleccionados en una ventana ImGui. Existen dos 
+formas de realizar los movimientos:
+
+- **A través de la interfaz ImGui**: presionando los botones que aparecen en la
+ventana donde se selecciona el movimiento.
+- **Mediante movimientos del ratón**: desplazando el ratón de manera vertical u
+horizontal.
+
+#### Control mediante ratón
+
+Para poder mover la cámara a través del ratón se debe mantener pulsado el clic
+izquierdo mientras se arrastra. Para que esto funcionara, ha sido necesario 
+registrar un nuevo callback `cursor_position_callback` que comunica la posición
+del cursor a la clase ImGui.
+
+Sin embargo, cabe recalcar que, debido a esta implementación, se han desactivado
+los callbacks automáticos de ImGui, por lo que, para que la práctica anterior 
+(Práctica 4) pudiera seguir funcionando con normalidad, se ha necesitado 
+implementar un segundo callback referido a los eventos de teclado `char_callback`.
+Este tiene como misión obtener los eventos de teclado referidos únicamente 
+a caracteres, todo ello para evitar el mapeo manual de las teclas.
+
+Además, para evitar conflictos entre el movimiento de la cámara y la interacción
+con la interfaz ImGui se ha hecho uso de la función 
+`ImGUI::GetIO().WantCaptureMouse`. Esta permite que, cuando ImGui está usando
+el ratón, los movimientos de la cámara quedan temporalmente deshabilitados, 
+permitiendo mover ventanas, pulsar botones o usar controles sin modificar
+accidentalmente la cámara.
+
+A continuación se especifican los movimiento de ratón por cada movimiento de 
+cámara:
+
+- *Dolly*: arrastre vertical para movimiento en eje Z y arrastre horizontal para
+movimiento en eje X.
+- *Crane*: arrastre vertical para movimiento en eje Y.
+- *Pan*: arrastre horizontal para rotación respecto eje vertical de la cámara.
+- *Tilt*: arrastre vertical para rotación respecto eje lateral de la cámara.
+- *Orbit*: arrastre vertical para órbita vertical respecto al punto que mira
+la cámara y arrastre horizontal para órbita horizontal respecto al punto que
+mira la cámara. 
+- *Zoom*: arrastre vertical para acortar o aumentar el ángulo de visión.
+
+### Diagrama UML
+
+                 +---------------+
+                 |    main.cpp   |
+                 +---------------+
+                  /   |         \
+                 /    |          \
+                v     v           v
+
+           +------+ +------+     +---------------+     +------+
+           | GLFW | | GUI  |     |  Renderer     | --> |OpenGL|
+           +------+ +------+     +---------------+     +------+
+                       |         | Camera        |
+                       v         | ShaderProgram |
+                   +----------+  +---------------+
+                   |Dear ImGUI|        /         \
+                   +----------+       v           v
+                             +------------+  +---------------+
+                             |  Camera    |  | ShaderProgram |
+                             +------------+  +---------------+
+
 # Práctica 4
 
 ### ¿Cómo se ha realizado el desacoplamiento?

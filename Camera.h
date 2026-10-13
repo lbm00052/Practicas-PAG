@@ -6,6 +6,10 @@
 
 namespace PAG {
 
+    enum class MovimientosCamara{
+        DOLLY, CRANE, PAN, TILT, ORBIT, ZOOM
+    };
+
     /**
      * @brief Clase encargada de representar la cámara virtual
      */
@@ -19,6 +23,13 @@ namespace PAG {
             glm::vec3 lookAt;
             // Vector que indica la dirección vertical de al cámara
             glm::vec3 up;
+
+            // Campo de visión
+            float fov = 45.0f;
+
+            // Angulo acumulado para el movimiento orbit
+            float orbitHorizontal = 0.0f;
+            float orbitVertical = 0.0f;
 
         public:
 
@@ -35,6 +46,15 @@ namespace PAG {
             glm::vec3& getPos();
             glm::vec3& getLookAt();
             glm::vec3& getUp();
+
+            // Movimientos de la cámara
+            void dolly(float dx, float dz);
+            void crane(float dy);
+            void pan(float angulo);
+            void tilt(float angulo);
+            void orbit(float horizontal, float vertical);
+            void zoom(float delta);
+
     };
 }
 

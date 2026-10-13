@@ -46,7 +46,9 @@ namespace PAG {
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
         // Inicialización de GLFW y OpenGL con ImGui
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
+            // Es false porque sino no toma los callback que yo he
+            // realizado, sino los que crea automaticamente
+        ImGui_ImplGlfw_InitForOpenGL(window, false);
         ImGui_ImplOpenGL3_Init("#version 430");
     }
 
@@ -117,6 +119,53 @@ namespace PAG {
             }
         }
         ImGui::End();
+
+        // VENTANA PARA LOS MOVIMIENTOS DE LA CÁMARA
+        ImGui::SetNextWindowPos(ImVec2(10, 750), ImGuiCond_Once);
+        if (ImGui::Begin("Camara")) {
+            ImGui::SetWindowFontScale(1.0f);
+
+            static int movimiento = 0;
+            const char* movimientos[] = {"Dolly","Crane","Pan","Tilt","Orbit","Zoom"};
+
+            if (ImGui::Combo("##",&movimiento,movimientos,IM_ARRAYSIZE(movimientos))) {
+
+                PAG::Renderer& render = Renderer::getInstancia();
+
+                switch (movimiento) {
+                    case 0:
+                        render.setMovimientoActual(MovimientosCamara::DOLLY);
+                        addMensaje("dolly");
+                        break;
+
+                    case 1:
+                        render.setMovimientoActual(MovimientosCamara::CRANE);
+                        addMensaje("crane");
+                        break;
+
+                    case 2:
+                        render.setMovimientoActual(MovimientosCamara::PAN);
+                        addMensaje("pan");
+                        break;
+
+                    case 3:
+                        render.setMovimientoActual(MovimientosCamara::TILT);
+                        addMensaje("tilt");
+                        break;
+
+                    case 4:
+                        render.setMovimientoActual(MovimientosCamara::ORBIT);
+                        addMensaje("orbit");
+                        break;
+
+                    case 5:
+                        render.setMovimientoActual(MovimientosCamara::ZOOM);
+                        addMensaje("zoom");
+                        break;
+                }
+            }
+        }
+        ImGui::End();
     }
 
     // Finalización/renderizado de ImGui
@@ -167,6 +216,12 @@ namespace PAG {
         }
     }
 
+    // Método para eventos de teclado (especifico para letras y números)
+        // Es necesario porque he desactivado los callbacks automáticos de ImGUI
+    void GUI::onChar(unsigned int c) {
+        ImGui::GetIO().AddInputCharacter(c);
+    }
+
     // Método para los eventos de ratón
     void GUI::onMouseButton( int button, int action){
         ImGuiIO& io = ImGui::GetIO();
@@ -176,11 +231,77 @@ namespace PAG {
         } else if ( action == GLFW_RELEASE ) {
             io.AddMouseButtonEvent(button, false );
         }
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT){
+            if (action == GLFW_PRESS){
+                arrastrando = true;
+            } else if (action == GLFW_RELEASE) {
+                arrastrando = false;
+            }
+        }
     }
 
     // Método para los eventos de scroll
     void GUI::onScroll(float xoffset, float yoffset){
         ImGuiIO& io = ImGui::GetIO();
         io.AddMouseWheelEvent(xoffset, yoffset);
+    }
+
+    // Métodos para el movimiento del ratón
+    void GUI::onCursorPosition(double xpos, double ypos) {
+
+        // Función para que ImGui permita seguir usando las
+        // ventanas de interfaz
+        if(ImGui::GetIO().WantCaptureMouse){
+            arrastrando = false;
+            return;
+        }
+
+        // Si no se está arrastrando no se esta haciendo nada.
+        if (!arrastrando) {
+            ultimoX = xpos;
+            ultimoY = ypos;
+            return;
+        }
+
+        // Se calcula el desplazamiento que realiza el ratón
+        double dx = xpos - ultimoX;
+        double dy = ypos - ultimoY;
+
+        Renderer& renderer = Renderer::getInstancia();
+        Camera& camera = renderer.getCamera();
+
+        // Según el movimiento actual la cámara se mueve de una manera u otra
+        switch(renderer.getMovimientoActual()) {
+            case MovimientosCamara::DOLLY:
+                camera.dolly(dx * 0.01f, dy * 0.01f);
+                break;
+
+            case MovimientosCamara::CRANE:
+                camera.crane(dy * 0.01f);
+                break;
+
+            case MovimientosCamara::PAN:
+                camera.pan(dx * 0.01f);
+                break;
+
+            case MovimientosCamara::TILT:
+                camera.tilt(dy * 0.01f);
+                break;
+
+            case MovimientosCamara::ORBIT:
+                camera.orbit(dx * 0.01f, dy * 0.01f);
+                break;
+
+            case MovimientosCamara::ZOOM:
+                camera.zoom(dy * 0.1f);
+                break;
+
+            default:
+                break;
+        }
+        // Posición en que la que se encuentre el ratón al final
+        ultimoX = xpos;
+        ultimoY = ypos;
     }
 }

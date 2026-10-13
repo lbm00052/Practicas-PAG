@@ -29,6 +29,14 @@ namespace PAG {
                 // Es char porque GUI trabaja con buffers de caracteres
             char rutaShader[256] = "../pag03";
 
+            // Para los movimientos del ratón
+                // Indica si se está arrastrando el ratón
+            bool arrastrando = false;
+
+                // Última pos registrada del cursor
+            double ultimoX = 0.0;
+            double ultimoY = 0.0;
+
         public:
 
             // Destructor
@@ -63,6 +71,12 @@ namespace PAG {
 
             // Método para los eventos de scroll
             void onScroll(float xoffset, float yoffset);
+
+            // Métodos para el movimiento del ratón
+            void onCursorPosition(double xpos, double ypos);
+
+            // Método para eventos de teclado (especifico para letras y números)
+            void onChar(unsigned int c);
     };
 }
 

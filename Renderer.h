@@ -38,6 +38,11 @@ namespace PAG {
             // Cámara virtual de la escena
             Camera camera;
 
+            MovimientosCamara movimientoActual = MovimientosCamara::DOLLY;
+
+            int width = 1024;
+            int height = 576;
+
             // Identificadores de la geometría
             GLuint idVAO = 0;   // Identificador del vertex array object
             GLuint idVBO = 0;   // Identificador del vertex buffer object
@@ -79,6 +84,12 @@ namespace PAG {
 
             // Método para obtener la cámara
             Camera& getCamera();
+
+            // Método para obtener el movimiento actual de la cámara
+            MovimientosCamara getMovimientoActual() const;
+
+            // Método para cambiar el movimiento actual de la cámara
+            void setMovimientoActual(MovimientosCamara mov);
 
             // Método para crear el VAO para el modelo a renderizar
             void creaModelo();

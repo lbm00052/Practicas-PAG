@@ -65,7 +65,7 @@ namespace PAG {
 
         // Obtener la matriz de la vista de la cámara y la de proyección
         glm::mat4 view = camera.getViewMatrix();
-        glm::mat4 projection = camera.getProjectionMatrix(1024.0f/576.0f);
+        glm::mat4 projection = camera.getProjectionMatrix((float)width/(float)height);
 
         // Obtener la localización del uniform "view" y "projection"
         GLint idView = glGetUniformLocation(shaderProgram.getId(),"view");
@@ -82,6 +82,9 @@ namespace PAG {
 
     // Método para cambiar el tamaño de la ventana
     void Renderer::onResize(int width, int height) {
+        this->width = width;
+        this->height = height;
+
         glViewport(0, 0, width, height);
     }
 
@@ -128,6 +131,16 @@ namespace PAG {
     // Método para obtener la cámara
     Camera &Renderer::getCamera() {
         return camera;
+    }
+
+    // Método para obtener el movimiento actual de la cámara
+    MovimientosCamara Renderer::getMovimientoActual() const{
+        return movimientoActual;
+    }
+
+    // Método para cambiar el movimiento actual de la cámara
+    void Renderer::setMovimientoActual(MovimientosCamara mov) {
+        this->movimientoActual = mov;
     }
 
     /**

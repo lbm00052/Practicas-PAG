@@ -63,6 +63,16 @@ void mouse_button_callback ( GLFWwindow *window, int button, int action, int mod
     }
 }
 
+// Callback para obtener la posición del cursor en pantalla
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos){
+    PAG::GUI::getInstancia().onCursorPosition(xpos, ypos);
+}
+
+// Callback para eventos de teclado (específico para números y letras)
+void char_callback(GLFWwindow* window, unsigned int c){
+    PAG::GUI::getInstancia().onChar(c);
+}
+
 // - Esta función callback será llamada cada vez que se mueva la rueda
 // del ratón sobre el área de dibujo OpenGL.
     // El color de la ventana cambiará al mover la rueda
@@ -141,6 +151,8 @@ int main() {
     glfwSetFramebufferSizeCallback( window, framebuffer_size_callback );
     glfwSetKeyCallback( window, key_callback );
     glfwSetMouseButtonCallback( window, mouse_button_callback );
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetCharCallback(window,char_callback);
     glfwSetScrollCallback( window, scroll_callback );
 
     // Inicialización de la intancia

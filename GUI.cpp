@@ -135,32 +135,26 @@ namespace PAG {
                 switch (movimiento) {
                     case 0:
                         render.setMovimientoActual(MovimientosCamara::DOLLY);
-                        addMensaje("dolly");
                         break;
 
                     case 1:
                         render.setMovimientoActual(MovimientosCamara::CRANE);
-                        addMensaje("crane");
                         break;
 
                     case 2:
                         render.setMovimientoActual(MovimientosCamara::PAN);
-                        addMensaje("pan");
                         break;
 
                     case 3:
                         render.setMovimientoActual(MovimientosCamara::TILT);
-                        addMensaje("tilt");
                         break;
 
                     case 4:
                         render.setMovimientoActual(MovimientosCamara::ORBIT);
-                        addMensaje("orbit");
                         break;
 
                     case 5:
                         render.setMovimientoActual(MovimientosCamara::ZOOM);
-                        addMensaje("zoom");
                         break;
                 }
             }

@@ -106,7 +106,7 @@ namespace PAG {
 
         // Cacula la posición de la cámara usando coordenadas esféricas
         pos.x = lookAt.x + radio * cos(orbitVertical) * sin(orbitHorizontal);
-        pos.y = lookAt.y + radio * sin(orbitHorizontal);
+        pos.y = lookAt.y + radio * sin(orbitVertical);
         pos.z = lookAt.z + radio * cos(orbitVertical) * cos(orbitHorizontal);
     }
 

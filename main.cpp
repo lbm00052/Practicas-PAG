@@ -164,7 +164,7 @@ int main() {
         // aplique (si es que se llega a aplicar alguno), se debe crear el modelo. Si la creación
         // del modelo se encontrara después de la creación de del shader program y este último
         // fallara, no se crearía el modelo nunca
-        PAG::Renderer::getInstancia().creaModelo();
+        PAG::Renderer::getInstancia().getModelo().crearModelo();
         PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag05");
     } catch (const std::exception& e) {
         PAG::GUI::getInstancia().addMensaje(e.what());

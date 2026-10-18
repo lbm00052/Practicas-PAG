@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.29)
 project(practica1)
 
+add_subdirectory(assimp)
+
 set(CMAKE_CXX_STANDARD 20)
 
 # Define variables agrupando nombres de archivo
@@ -25,9 +27,9 @@ add_executable( ${PROJECT_NAME} ${MY_FILES} ${GLAD_FILES} ${IMGUI_FILES}
 )
 
 # Indica directorios (adicionales a los por defecto) para buscar includes
-target_include_directories( ${PROJECT_NAME} PUBLIC GLAD/include imGui/include)
+target_include_directories( ${PROJECT_NAME} PUBLIC GLAD/include imGui/include assimp/include)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw glm::glm)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL glfw glm::glm assimp)

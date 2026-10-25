@@ -172,21 +172,21 @@ int main() {
         // Código de prueba para varios modelos en escena
         auto& modelos = PAG::Renderer::getInstancia().getModelos();
 
-        modelos.emplace_back();
-        modelos.back().crearModelo();
-        modelos.emplace_back();
-        modelos.back().crearModelo();
-        modelos.emplace_back();
-        modelos.back().crearModelo();
+        modelos.push_back(std::make_unique<PAG::Modelo>());
+        modelos.back()->crearModelo();
+        modelos.push_back(std::make_unique<PAG::Modelo>());
+        modelos.back()->crearModelo();
+        modelos.push_back(std::make_unique<PAG::Modelo>());
+        modelos.back()->crearModelo();
 
-        modelos[0].getTraslacion().x = -1.5f;
-        modelos[0].actualizarMatrizModelo();
+        modelos[0]->getTraslacion().x = -1.5f;
+        modelos[0]->actualizarMatrizModelo();
 
-        modelos[1].getTraslacion().x = 0.0f;
-        modelos[1].actualizarMatrizModelo();
+        modelos[1]->getTraslacion().x = 0.0f;
+        modelos[1]->actualizarMatrizModelo();
 
-        modelos[2].getTraslacion().x = 1.5f;
-        modelos[2].actualizarMatrizModelo();
+        modelos[2]->getTraslacion().x = 1.5f;
+        modelos[2]->actualizarMatrizModelo();
 
         PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag06");
     } catch (const std::exception& e) {

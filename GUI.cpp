@@ -270,32 +270,32 @@ namespace PAG {
         }
         ImGui::End();
 
+        std::vector<std::unique_ptr<Modelo>>& modelos = Renderer::getInstancia().getModelos();
+
         // VENTANA PARA LAS TRANSFORMACIONES DE UN MODELO
         ImGui::SetNextWindowPos(ImVec2(350,10),ImGuiCond_Once);
 
         if(ImGui::Begin("Transformacion")){
 
-            std::vector<Modelo>& modelos = Renderer::getInstancia().getModelos();
-
             // Si no hay modelos no se puede hacer nada
             if (!modelos.empty()) {
 
-                Modelo &modelo = Renderer::getInstancia().getModelos()[modeloSeleccionado];
+                auto &modelo = modelos[modeloSeleccionado];
 
                 bool modificado = false;
 
                 ImGui::Text("Traslacion");
-                modificado |= ImGui::DragFloat3("T", &modelo.getTraslacion().x, 0.05f);
+                modificado |= ImGui::DragFloat3("T", &modelo->getTraslacion().x, 0.05f);
 
                 ImGui::Text("Rotacion");
-                modificado |= ImGui::DragFloat3("R", &modelo.getRotacion().x, 1.0f);
+                modificado |= ImGui::DragFloat3("R", &modelo->getRotacion().x, 1.0f);
 
                 ImGui::Text("Escala");
-                modificado |= ImGui::DragFloat3("S", &modelo.getEscala().x, 0.05f);
+                modificado |= ImGui::DragFloat3("S", &modelo->getEscala().x, 0.05f);
 
                 // Para evitar que el modelo se esté actualizando constantemente
                 if (modificado) {
-                    modelo.actualizarMatrizModelo();
+                    modelo->actualizarMatrizModelo();
                 }
             }
         }
@@ -304,13 +304,25 @@ namespace PAG {
         // VENTANA PARA SELECCIONAR UN MODELO
         if(ImGui::Begin("Modelos")){
 
-            std::vector<Modelo>& modelos = Renderer::getInstancia().getModelos();
-
             ImGui::Text("Numero de modelos: %d",(int)modelos.size());
 
-            ImGui::InputInt("Seleccionado",&modeloSeleccionado);
+            if(ImGui::Button("Anadir modelo")){
+                modelos.push_back(std::make_unique<Modelo>());
+                modelos.back()->crearModelo();
+                modeloSeleccionado = (int)modelos.size() - 1;
+            }
+            if(ImGui::Button("Eliminar modelo")){
+                if(!modelos.empty()){
+                    modelos.erase(modelos.begin()+ modeloSeleccionado);
+
+                    if(modeloSeleccionado >= modelos.size()){
+                        modeloSeleccionado =std::max(0,(int)modelos.size() - 1);
+                    }
+                }
+            }
 
             if (!modelos.empty()){
+                ImGui::InputInt("Seleccionado",&modeloSeleccionado);
                 modeloSeleccionado = std::clamp(modeloSeleccionado, 0, (int) modelos.size() - 1);
             } else {
                 modeloSeleccionado = 0;

@@ -60,13 +60,13 @@ namespace PAG {
         glUniformMatrix4fv(idProjection, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Por cada modelo que se vaya a dibujar
-        for(Modelo& modelo : modelos) {
+        for(auto& modelo : modelos) {
             // Obtiene la matriz de modelado de un modelo
-            glm::mat4 model = modelo.getModelMatrix();
+            glm::mat4 model = modelo->getModelMatrix();
             // Envia la matriz de ese modelo al shader
             glUniformMatrix4fv(idModel,1,GL_FALSE,glm::value_ptr(model));
             // Dibuja la geometría del modelo en pantalla
-            modelo.dibujar();
+            modelo->dibujar();
         }
     }
 
@@ -133,7 +133,7 @@ namespace PAG {
         this->movimientoActual = mov;
     }
 
-    std::vector<Modelo>& Renderer::getModelos(){
+    std::vector<std::unique_ptr<Modelo>>& Renderer::getModelos(){
         return modelos;
     }
 }

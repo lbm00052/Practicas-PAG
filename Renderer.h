@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Modelo.h"
 #include <vector>
+#include <memory>
 
 // Espacio de nombres para las prácticas de PAG
 namespace PAG {
@@ -48,7 +49,7 @@ namespace PAG {
             int height = 576;
 
             // Modelos que se van a pintar
-            std::vector<Modelo> modelos;
+            std::vector<std::unique_ptr<Modelo>> modelos;
 
         public:
 
@@ -92,7 +93,7 @@ namespace PAG {
             void setMovimientoActual(MovimientosCamara mov);
 
             // Método para obtener los modelos
-            std::vector<Modelo>& getModelos();
+            std::vector<std::unique_ptr<Modelo>>& getModelos();
     };
 }
 

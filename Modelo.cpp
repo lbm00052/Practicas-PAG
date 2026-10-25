@@ -1,6 +1,7 @@
 #include "Modelo.h"
 #include <glad/glad.h>
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace PAG{
 
@@ -193,5 +194,35 @@ namespace PAG{
         if (glGetError() != GL_NO_ERROR) {
             throw std::runtime_error("[ERROR] Fallo al cargar datos en el IBO (glBufferData).");
         }
+    }
+
+    // Getter para la matriz de modelado
+    glm::mat4 &Modelo::getModelMatrix() {
+        return model;
+    }
+
+    // Getters de las matrices para las transformaciones
+    glm::vec3& Modelo::getTraslacion() {
+        return traslacion;
+    }
+    glm::vec3& Modelo::getRotacion() {
+        return rotacion;
+    }
+    glm::vec3& Modelo::getEscala() {
+        return escala;
+    }
+
+    // Actualiza la matriz de modelado
+    void Modelo::actualizarMatrizModelo() {
+
+        model = glm::mat4(1.0f);
+
+        model = glm::translate(model,traslacion);
+
+        model = glm::rotate(model,glm::radians(rotacion.x),glm::vec3(1,0,0));
+        model = glm::rotate(model,glm::radians(rotacion.y),glm::vec3(0,1,0));
+        model = glm::rotate(model,glm::radians(rotacion.z),glm::vec3(0,0,1));
+
+        model = glm::scale(model,escala);
     }
 }

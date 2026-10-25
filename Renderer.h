@@ -4,6 +4,7 @@
 #include "ShaderProgram.h"
 #include "Camera.h"
 #include "Modelo.h"
+#include <vector>
 
 // Espacio de nombres para las prácticas de PAG
 namespace PAG {
@@ -46,8 +47,8 @@ namespace PAG {
             int width = 1024;
             int height = 576;
 
-            // Modelo que se va a pintar
-            Modelo modelo;
+            // Modelos que se van a pintar
+            std::vector<Modelo> modelos;
 
         public:
 
@@ -90,8 +91,8 @@ namespace PAG {
             // Método para cambiar el movimiento actual de la cámara
             void setMovimientoActual(MovimientosCamara mov);
 
-            // Método para obtener el modelo
-            Modelo& getModelo ();
+            // Método para obtener los modelos
+            std::vector<Modelo>& getModelos();
     };
 }
 

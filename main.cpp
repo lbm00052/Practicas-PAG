@@ -164,8 +164,31 @@ int main() {
         // aplique (si es que se llega a aplicar alguno), se debe crear el modelo. Si la creación
         // del modelo se encontrara después de la creación de del shader program y este último
         // fallara, no se crearía el modelo nunca
-        PAG::Renderer::getInstancia().getModelo().crearModelo();
-        PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag05");
+
+        // Código de prueba para un solo modelo
+        //PAG::Renderer::getInstancia().getModelos().emplace_back(); // Añade un nuevo modelo al final del vector
+        //PAG::Renderer::getInstancia().getModelos().back().crearModelo(); // Crea el último modelo del vector
+
+        // Código de prueba para varios modelos en escena
+        auto& modelos = PAG::Renderer::getInstancia().getModelos();
+
+        modelos.emplace_back();
+        modelos.back().crearModelo();
+        modelos.emplace_back();
+        modelos.back().crearModelo();
+        modelos.emplace_back();
+        modelos.back().crearModelo();
+
+        modelos[0].getTraslacion().x = -1.5f;
+        modelos[0].actualizarMatrizModelo();
+
+        modelos[1].getTraslacion().x = 0.0f;
+        modelos[1].actualizarMatrizModelo();
+
+        modelos[2].getTraslacion().x = 1.5f;
+        modelos[2].actualizarMatrizModelo();
+
+        PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag06");
     } catch (const std::exception& e) {
         PAG::GUI::getInstancia().addMensaje(e.what());
     }

@@ -37,6 +37,9 @@ namespace PAG {
             double ultimoX = 0.0;
             double ultimoY = 0.0;
 
+            // Modelo seleccionado actualmente, por defecto el 0 (el primer modelo)
+            int modeloSeleccionado = 0;
+
         public:
 
             // Destructor

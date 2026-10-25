@@ -50,16 +50,24 @@ namespace PAG {
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = camera.getProjectionMatrix((float)width/(float)height);
 
-        // Obtener la localización del uniform "view" y "projection"
+        // Obtener la localización del uniform "view", "projection" y "model"
         GLint idView = glGetUniformLocation(shaderProgram.getId(),"view");
         GLint idProjection = glGetUniformLocation(shaderProgram.getId(),"projection");
+        GLint idModel = glGetUniformLocation(shaderProgram.getId(),"model");
 
         // Enviar las matrices al shader
         glUniformMatrix4fv(idView, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(idProjection, 1, GL_FALSE, glm::value_ptr(projection));
 
-        // Dibuja la geometría del modelo en pantalla
-        modelo.dibujar();
+        // Por cada modelo que se vaya a dibujar
+        for(Modelo& modelo : modelos) {
+            // Obtiene la matriz de modelado de un modelo
+            glm::mat4 model = modelo.getModelMatrix();
+            // Envia la matriz de ese modelo al shader
+            glUniformMatrix4fv(idModel,1,GL_FALSE,glm::value_ptr(model));
+            // Dibuja la geometría del modelo en pantalla
+            modelo.dibujar();
+        }
     }
 
     // Método para cambiar el tamaño de la ventana
@@ -125,7 +133,7 @@ namespace PAG {
         this->movimientoActual = mov;
     }
 
-    Modelo& Renderer::getModelo(){
-        return modelo;
+    std::vector<Modelo>& Renderer::getModelos(){
+        return modelos;
     }
 }

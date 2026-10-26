@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
+#include <string>
 
 // Aquí no puedo poner el include de glad porque da problemas de
 // dependencias (la biblioteca glad se propagaba a una clase que
@@ -34,6 +35,10 @@ namespace PAG {
             glm::vec3 rotacion = glm::vec3(0.0f);
             glm::vec3 escala = glm::vec3(1.0f);
 
+            std::vector<float> vertices;
+            std::vector<unsigned int> indices;
+            unsigned int numIndices = 0;
+
         public:
 
             // Constructor
@@ -58,6 +63,9 @@ namespace PAG {
 
             // Actualiza la matriz de modelado
             void actualizarMatrizModelo();
+
+            // Carga objetos obj
+            void cargarOBJ(const std::string& ruta);
     };
 }
 

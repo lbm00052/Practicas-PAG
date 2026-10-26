@@ -169,24 +169,13 @@ int main() {
         //PAG::Renderer::getInstancia().getModelos().emplace_back(); // Añade un nuevo modelo al final del vector
         //PAG::Renderer::getInstancia().getModelos().back().crearModelo(); // Crea el último modelo del vector
 
-        // Código de prueba para varios modelos en escena
+        // Código de prueba para cargar un modelo
         auto& modelos = PAG::Renderer::getInstancia().getModelos();
 
         modelos.push_back(std::make_unique<PAG::Modelo>());
+        modelos.back()->cargarOBJ("../modelos/dado.obj");
         modelos.back()->crearModelo();
-        modelos.push_back(std::make_unique<PAG::Modelo>());
-        modelos.back()->crearModelo();
-        modelos.push_back(std::make_unique<PAG::Modelo>());
-        modelos.back()->crearModelo();
-
-        modelos[0]->getTraslacion().x = -1.5f;
-        modelos[0]->actualizarMatrizModelo();
-
-        modelos[1]->getTraslacion().x = 0.0f;
-        modelos[1]->actualizarMatrizModelo();
-
-        modelos[2]->getTraslacion().x = 1.5f;
-        modelos[2]->actualizarMatrizModelo();
+        modelos.back()->actualizarMatrizModelo();
 
         PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag06");
     } catch (const std::exception& e) {

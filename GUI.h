@@ -4,6 +4,7 @@
 #include "iostream"
 #include <GLFW/glfw3.h>
 #include "vector"
+#include "imfilebrowser.h"
 
 namespace PAG {
 
@@ -29,6 +30,9 @@ namespace PAG {
                 // Es char porque GUI trabaja con buffers de caracteres
             char rutaShader[256] = "../pag03";
 
+            // Ruta de los archivos .obj
+            char rutaModelo[256] = "../Modelos/dado.obj";
+
             // Para los movimientos del ratón
                 // Indica si se está arrastrando el ratón
             bool arrastrando = false;
@@ -39,6 +43,9 @@ namespace PAG {
 
             // Modelo seleccionado actualmente, por defecto el 0 (el primer modelo)
             int modeloSeleccionado = 0;
+
+            // Variable para gestionar la ventana de navegación por el sistema de archivos
+            ImGui::FileBrowser explorador;
 
         public:
 

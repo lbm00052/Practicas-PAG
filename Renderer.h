@@ -49,6 +49,8 @@ namespace PAG {
             int height = 576;
 
             // Modelos que se van a pintar
+                // Vector dinámico de punteros inteligentes únicos
+                // std::unique_ptr hace gestión automática de memoria
             std::vector<std::unique_ptr<Modelo>> modelos;
 
         public:

@@ -165,16 +165,10 @@ int main() {
         // del modelo se encontrara después de la creación de del shader program y este último
         // fallara, no se crearía el modelo nunca
 
-        // Código de prueba para un solo modelo
-        //PAG::Renderer::getInstancia().getModelos().emplace_back(); // Añade un nuevo modelo al final del vector
-        //PAG::Renderer::getInstancia().getModelos().back().crearModelo(); // Crea el último modelo del vector
-
-        // Código de prueba para cargar un modelo
+        // Triángulo inicial
         auto& modelos = PAG::Renderer::getInstancia().getModelos();
-
         modelos.push_back(std::make_unique<PAG::Modelo>());
-        modelos.back()->cargarOBJ("../modelos/dado.obj");
-        modelos.back()->crearModelo();
+        modelos.back()->crearTriangulo();
         modelos.back()->actualizarMatrizModelo();
 
         PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag06");

@@ -52,6 +52,10 @@ namespace PAG {
             // realizado, sino los que crea automaticamente
         ImGui_ImplGlfw_InitForOpenGL(window, false);
         ImGui_ImplOpenGL3_Init("#version 430");
+
+        // Inicialización para el explorador de archivos
+        explorador.SetTitle("Seleccionar OBJ"); // Titulo
+        explorador.SetTypeFilters({ ".obj" }); // Filtro por extensiones
     }
 
     // Método para añadir los mensajes que se mostrarán en terminal
@@ -103,7 +107,7 @@ namespace PAG {
         }
         ImGui::End();
 
-        // VENTANA DE ELECCIÓN DE SHADER
+        // VENTANA DE ELECCIÓN DE SHADER ==========
         ImGui::SetNextWindowPos(ImVec2(10,600), ImGuiCond_Once);
         if (ImGui::Begin("Shader Program")){
             ImGui::SetWindowFontScale(1.0f);
@@ -122,7 +126,7 @@ namespace PAG {
         }
         ImGui::End();
 
-        // VENTANA PARA LOS MOVIMIENTOS DE LA CÁMARA
+        // VENTANA PARA LOS MOVIMIENTOS DE LA CÁMARA ==========
         ImGui::SetNextWindowPos(ImVec2(10, 750), ImGuiCond_Once);
         if (ImGui::Begin("Camara")) {
             ImGui::SetWindowFontScale(1.0f);
@@ -274,60 +278,124 @@ namespace PAG {
 
         std::vector<std::unique_ptr<Modelo>>& modelos = Renderer::getInstancia().getModelos();
 
-        // VENTANA PARA LAS TRANSFORMACIONES DE UN MODELO
-        ImGui::SetNextWindowPos(ImVec2(350,10),ImGuiCond_Once);
+        // VENTANA PARA LA GESTIÓN DE MODELOS ==========
+        ImGui::SetNextWindowPos(ImVec2(350, 10), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(380, 420), ImGuiCond_Once); // Tamaño inicial
 
-        if(ImGui::Begin("Transformacion")){
+        if (ImGui::Begin("Gestión de Modelos")) {
+            ImGui::SetWindowFontScale(1.0f);
 
-            // Si no hay modelos no se puede hacer nada
-            if (!modelos.empty()) {
+            // Bar de pestañas para organizar la interfaz
+            if (ImGui::BeginTabBar("TabsModelos")) {
 
-                auto &modelo = modelos[modeloSeleccionado];
+                // Pestaña 1: Selección y control
+                if (ImGui::BeginTabItem("Selección")) {
+                    ImGui::Text("Número de modelos cargados: %d", (int)modelos.size());
+                    ImGui::Separator();
 
-                bool modificado = false;
-
-                ImGui::Text("Traslacion");
-                modificado |= ImGui::DragFloat3("T", &modelo->getTraslacion().x, 0.05f);
-
-                ImGui::Text("Rotacion");
-                modificado |= ImGui::DragFloat3("R", &modelo->getRotacion().x, 1.0f);
-
-                ImGui::Text("Escala");
-                modificado |= ImGui::DragFloat3("S", &modelo->getEscala().x, 0.05f);
-
-                // Para evitar que el modelo se esté actualizando constantemente
-                if (modificado) {
-                    modelo->actualizarMatrizModelo();
-                }
-            }
-        }
-        ImGui::End();
-
-        // VENTANA PARA SELECCIONAR UN MODELO
-        if(ImGui::Begin("Modelos")){
-
-            ImGui::Text("Numero de modelos: %d",(int)modelos.size());
-
-            if(ImGui::Button("Anadir modelo")){
-                modelos.push_back(std::make_unique<Modelo>());
-                modelos.back()->crearModelo();
-                modeloSeleccionado = (int)modelos.size() - 1;
-            }
-            if(ImGui::Button("Eliminar modelo")){
-                if(!modelos.empty()){
-                    modelos.erase(modelos.begin()+ modeloSeleccionado);
-
-                    if(modeloSeleccionado >= modelos.size()){
-                        modeloSeleccionado =std::max(0,(int)modelos.size() - 1);
+                    if (ImGui::Button("Añadir triángulo básico")) {
+                        modelos.push_back(std::make_unique<Modelo>());
+                        modelos.back()->crearTriangulo();
+                        modeloSeleccionado = (int)modelos.size() - 1;
                     }
-                }
-            }
 
-            if (!modelos.empty()){
-                ImGui::InputInt("Seleccionado",&modeloSeleccionado);
-                modeloSeleccionado = std::clamp(modeloSeleccionado, 0, (int) modelos.size() - 1);
-            } else {
-                modeloSeleccionado = 0;
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Eliminar modelo seleccionado")) {
+                        if (!modelos.empty()) {
+                            modelos.erase(modelos.begin() + modeloSeleccionado);
+                            if (modeloSeleccionado >= (int)modelos.size()) {
+                                modeloSeleccionado = std::max(0, (int)modelos.size() - 1);
+                            }
+                        }
+                    }
+
+                    ImGui::Spacing();
+
+                    if (!modelos.empty()) {
+                        ImGui::InputInt("Modelo Activo", &modeloSeleccionado);
+                        modeloSeleccionado = std::clamp(modeloSeleccionado, 0, (int)modelos.size() - 1);
+                    } else {
+                        modeloSeleccionado = 0;
+                        ImGui::TextDisabled("No hay modelos disponibles.");
+                    }
+                    ImGui::EndTabItem();
+                }
+
+                // Pestaña 2: Transformaciones
+                if (ImGui::BeginTabItem("Transformaciones")) {
+                    if (!modelos.empty()) {
+                        auto &modelo = modelos[modeloSeleccionado];
+                        bool modificado = false;
+
+                        ImGui::Text("Modelo activo: %d", modeloSeleccionado);
+                        ImGui::Separator();
+
+                        ImGui::Text("Traslación");
+                        modificado |= ImGui::DragFloat3("T##Tras", &modelo->getTraslacion().x, 0.05f);
+
+                        ImGui::Text("Rotación");
+                        modificado |= ImGui::DragFloat3("R##Rot", &modelo->getRotacion().x, 1.0f);
+
+                        ImGui::Text("Escala");
+                        modificado |= ImGui::DragFloat3("S##Esc", &modelo->getEscala().x, 0.05f);
+
+                        if (modificado) {
+                            modelo->actualizarMatrizModelo();
+                        }
+                    } else {
+                        ImGui::TextDisabled("Carga o añade un modelo para transformarlo.");
+                    }
+                    ImGui::EndTabItem();
+                }
+
+                // Pestaña 3: Carga de archivos (.obj)
+                if (ImGui::BeginTabItem("Cargar OBJ")) {
+                    ImGui::Text("Ruta del archivo OBJ:");
+                    ImGui::InputText("##RutaModelo", rutaModelo, sizeof(rutaModelo));
+
+                    if (ImGui::Button("Abrir Explorador")) {
+                        explorador.Open();
+                    }
+                    // Renderiza el diálogo del explorador si está abierto
+                    explorador.Display();
+
+                    if (explorador.HasSelected()) {
+                        std::string ruta = explorador.GetSelected().string();
+                        addMensaje("Archivo seleccionado: " + ruta);
+
+                        try {
+                            modelos.push_back(std::make_unique<Modelo>());
+                            modelos.back()->cargarOBJ(ruta);
+                            modelos.back()->crearModelo();
+                            modelos.back()->actualizarMatrizModelo();
+
+                            addMensaje("Modelo cargado: " + ruta);
+                            modeloSeleccionado = (int)modelos.size() - 1;
+                        } catch (const std::exception& e) {
+                            addMensaje(e.what());
+                        }
+                        explorador.ClearSelected();
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Cargar desde Ruta Manual")) {
+                        try {
+                            modelos.push_back(std::make_unique<Modelo>());
+                            modelos.back()->cargarOBJ(rutaModelo);
+                            modelos.back()->crearModelo();
+                            modelos.back()->actualizarMatrizModelo();
+
+                            addMensaje("Modelo cargado: " + std::string(rutaModelo));
+                            modeloSeleccionado = (int)modelos.size() - 1;
+                        } catch (const std::exception& e) {
+                            addMensaje(e.what());
+                        }
+                    }
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
             }
         }
         ImGui::End();

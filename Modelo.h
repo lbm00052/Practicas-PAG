@@ -61,6 +61,9 @@ namespace PAG {
             glm::vec3& getRotacion();
             glm::vec3& getEscala();
 
+            // Crea un triángulo
+            void crearTriangulo();
+
             // Actualiza la matriz de modelado
             void actualizarMatrizModelo();
 

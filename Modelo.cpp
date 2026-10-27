@@ -35,108 +35,24 @@ namespace PAG{
         glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr); // Pinta la geometría
     }
 
+    // Crea un triángulo
+    void Modelo::crearTriangulo() {
+        vertices.clear();
+        indices.clear();
+
+        vertices = {-0.5f, -0.5f, 0.0f,
+                     0.5f, -0.5f, 0.0f,
+                     0.0f,  0.5f, 0.0f};
+        indices = {0, 1, 2};
+
+        numIndices = indices.size();
+        crearModelo();
+    }
+
     /**
      * Método para crear el VAO para el modelo a renderizar
      */
     void Modelo::crearModelo() {
-        /*
-        // VERSIÓN NO ENTRELAZADA ================================
-        // Vértices (posición)
-        GLfloat posiciones[] = {
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-                0.0f,  0.5f, 0.0f
-        };
-
-        // Colores (uno por vértice)
-        GLfloat colores[] = {
-                1.0f, 0.0f, 0.0f,   // rojo
-                0.0f, 1.0f, 0.0f,   // verde
-                0.0f, 0.0f, 1.0f    // azul
-        };
-
-        GLuint indices[] = { 0, 1, 2 };
-
-        // VAO
-        glGenVertexArrays(1, &idVAO);
-        if (idVAO == 0) {
-            throw std::runtime_error("[ERROR] No se pudo generar el VAO.");
-        }
-
-        glBindVertexArray(idVAO);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al hacer glBindVertexArray.");
-        }
-
-        // VBO de posiciones
-        glGenBuffers(1, &idVBO);
-        if (idVBO == 0) {
-            throw std::runtime_error("[ERROR] No se pudo generar el VBO.");
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, idVBO);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al hacer glBindBuffer(GL_ARRAY_BUFFER).");
-        }
-        glBufferData(GL_ARRAY_BUFFER, sizeof(posiciones), posiciones, GL_STATIC_DRAW);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al cargar datos en el VBO (glBufferData).");
-        }
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo en glVertexAttribPointer.");
-        }
-        glEnableVertexAttribArray(0);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo en glEnableVertexAttribArray(0).");
-        }
-
-        // VBO de colores
-        glGenBuffers(1, &idVBOColor);
-        if (idVBOColor == 0) {
-            throw std::runtime_error("[ERROR] No se pudo generar el VBO.");
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, idVBOColor);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al hacer glBindBuffer(GL_ARRAY_BUFFER).");
-        }
-        glBufferData(GL_ARRAY_BUFFER, sizeof(colores), colores, GL_STATIC_DRAW);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al cargar datos en el VBO (glBufferData).");
-        }
-
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo en glVertexAttribPointer.");
-        }
-        glEnableVertexAttribArray(1);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo en glEnableVertexAttribArray(0).");
-        }
-
-        // IBO
-        glGenBuffers(1, &idIBO);
-        if (idIBO == 0) {
-            throw std::runtime_error("[ERROR] No se pudo generar el IBO.");
-        }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIBO);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al hacer glBindBuffer(GL_ELEMENT_ARRAY_BUFFER).");
-        }
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo al cargar datos en el IBO (glBufferData).");
-        }*/
-
-        // VERSIÓN ENTRELAZADA ================================
-        /*GLfloat datos[] = {
-                // posición                        // color
-                -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,
-                0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,
-                0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f
-        };*/
-
-        //GLuint indices[] = { 0, 1, 2 };
 
         glGenVertexArrays(1, &idVAO); // Crea el VAO
         if (idVAO == 0) {
@@ -174,17 +90,7 @@ namespace PAG{
         if (glGetError() != GL_NO_ERROR) {
             throw std::runtime_error("[ERROR] Fallo en glEnableVertexAttribArray(0).");
         }
-/*
-        // color → location = 1
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(3 * sizeof(float)));
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo en glVertexAttribPointer.");
-        }
-        glEnableVertexAttribArray(1);
-        if (glGetError() != GL_NO_ERROR) {
-            throw std::runtime_error("[ERROR] Fallo en glEnableVertexAttribArray(0).");
-        }
-*/
+
         glGenBuffers(1, &idIBO); // Crea el IBO
         if (idIBO == 0) {
             throw std::runtime_error("[ERROR] No se pudo generar el IBO.");

@@ -65,6 +65,8 @@ namespace PAG {
             glm::mat4 model = modelo->getModelMatrix();
             // Envia la matriz de ese modelo al shader
             glUniformMatrix4fv(idModel,1,GL_FALSE,glm::value_ptr(model));
+            // Para ver el modelo en malla de triángulos
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             // Dibuja la geometría del modelo en pantalla
             modelo->dibujar();
         }

@@ -22,4 +22,3 @@ Makefile
 # Librerias externas
 GLAD/
 imGui/
-assimp/

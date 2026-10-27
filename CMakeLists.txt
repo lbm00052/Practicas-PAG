@@ -22,6 +22,7 @@ add_executable( ${PROJECT_NAME} ${MY_FILES} ${GLAD_FILES} ${IMGUI_FILES}
         Camera.h
         Modelo.cpp
         Modelo.h
+        imfilebrowser.h
 )
 
 # Indica directorios (adicionales a los por defecto) para buscar includes

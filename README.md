@@ -1,3 +1,116 @@
+# Práctica 6
+
+## Mejoras implementadas en esta práctica
+En esta práctica se han implementado las siguientes mejoras:
+
+### Desacoplamiento de la clase Modelo de Renderer
+
+Para continuar con el desacoplamiento de la aplicación, se ha extraído toda 
+la responsabilidad geométrica de la clase `Renderer` creando una nueva clase 
+llamada `Modelo`. La clase `Modelo` se encarga de:
+
+- Almacenar la geometría (posiciones de vértices) y la topología (índices de 
+caras) de los objetos tridimensionales.   
+- Generar y gestionar sus propios identificadores de GPU de OpenGL (idVAO, 
+idVBO e idIBO).
+- Dibujar su propia geometría en pantalla a través del método `dibujar()` que 
+activa su VAO y ejecuta la llamada `glDrawElements`.
+- Liberar sus propios búferes en el destructor aplicando el patrón RAII.
+
+De esta forma, Renderer deja de almacenar identificadores de búferes concretos 
+y pasa a coordinar un vector de modelos dinámico
+(`std::vector<std::unique_ptr<Modelo>>`). El uso de punteros inteligentes únicos 
+(`std::unique_ptr`) garantiza la gestión automática de memoria y previene fugas
+cuando se añaden o eliminan objetos de la escena en tiempo de ejecución.   
+
+### Adición de la matriz de modelado y transformaciones
+
+Para permitir la coexistencia de varios objetos en la escena, 
+la clase `Modelo` tiene la capacidad de almacenar y aplicar 
+transformaciones geométricas individuales. Cada modelo gestiona 
+internamente:
+
+- **traslacion**: vector con el desplazamiento en los ejes X, Y y Z.   
+- **rotacion**: vector con los ángulos de giro (en grados) respecto a 
+cada eje.   
+- **escala**: vector con el factor de escalado en cada dimensión.   
+- **model**: matriz de transformación.
+
+Mediante el método `actualizarMatrizModelo()`, se calcula la matriz de modelado 
+resultante combinando traslación, rotación y escala. Durante el refresco de 
+la escena en `Renderer::refrescar()`, se obtiene la matriz de modelado de cada 
+objeto y se envía individualmente al shader mediante el `uniform model` justo 
+antes de realizar la llamada de dibujado.
+
+### Modificación de los shaders
+
+Para soportar las transformaciones de modelado de cada objeto, se ha actualizado
+el vertex shader incorporando el nuevo `uniform model`: la matriz `model` aplica 
+la transformación de modelado individual de cada objeto, posicionándolo, 
+orientándolo y escalándolo en el espacio del mundo.   
+
+La posición final de cada vértice en pantalla se calcula en el vertex shader 
+multiplicando en orden las tres matrices fundamentales. Además, se han eliminado
+los atributos de color antiguos para simplificar la implementación de esta práctica.
+
+### Carga de modelos en formato OBJ con Assimp
+
+Se ha integrado la biblioteca `Assimp` en el proyecto a través de `CMakeLists.txt` 
+para permitir la importación de modelos poliédricos en formato .obj desde disco.
+
+La clase `Modelo` incorpora el método `cargarOBJ(const std::string& ruta)`, que 
+utiliza `Assimp::Importer` para leer las mallas de triángulos del archivo, 
+procesar la lista de vértices e índices y generar los búferes correspondientes 
+en la GPU mediante `crearModelo()`. Todo el proceso de carga está incluido en
+bloques `try-catch`, capturando cualquier fallo de lectura o archivo inexistente 
+y redirigiendo el mensaje de error a la ventana de mensajes de `ImGui` sin detener 
+la aplicación.   
+
+### Adición de la interfaz de ImGui para la gestión de modelos
+
+Se ha unificado el control de los objetos de la escena en una ventana flotante 
+en `ImGui` llamada "Gestión de Modelos". Para estructurar la interfaz, se ha 
+utilizado una barra de pestañas dividida en tres secciones:   
+
+- **Pestaña Selección**: Muestra el número total de modelos cargados y permite 
+instanciar un triángulo por defecto, eliminar el modelo seleccionado o cambiar 
+el modelo activo mediante un control numérico acotado.   
+- **Pestaña Transformaciones**: Muestra controles para modificar 
+la traslación, rotación y escala del modelo seleccionado activo. Se ha 
+optimizado la actualización comprobando si se ha producido algún cambio en 
+los valores antes de recalcular la matriz con actualizarMatrizModelo().
+- **Pestaña Cargar OBJ**: Incorpora un cuadro de texto para rutas manuales e 
+integra un explorador de archivos nativo que permite navegar por los 
+directorios del equipo y seleccionar archivos .obj con el ratón.
+
+### Diagrama UML
+
+                 +---------------+
+                 |    main.cpp   |
+                 +---------------+
+                  /   |         \
+                 /    |          \
+                v     v           v
+           +------+ +------+     +---------------+     +------+
+           | GLFW | | GUI  | --> |  Renderer     | --> |OpenGL|
+           +------+ +------+     +---------------+     +------+
+                       |         | Camera        |
+                       v         | ShaderProgram |
+                   +----------+  | Modelo (std::vector<unique_ptr>)
+                   |Dear ImGUI|  +---------------+
+                   +----------+       /    |    \
+                                     /     |     \
+                                    v      v      v
+                        +------------+ +-------+ +---------------+
+                        |   Camera   | |Modelo | | ShaderProgram |
+                        +------------+ +-------+ +---------------+
+                                           |
+                                           v
+                                    +--------------+
+                                    |    Assimp    |
+                                    +--------------+
+
+
 # Práctica 5
 
 ## Mejoras implementadas en esta práctica

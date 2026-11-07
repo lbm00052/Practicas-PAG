@@ -64,6 +64,9 @@ namespace PAG {
         GLuint idxAlambre = glGetSubroutineIndex(idSP, GL_FRAGMENT_SHADER, "colorAlambre");
         GLuint idxSolido  = glGetSubroutineIndex(idSP, GL_FRAGMENT_SHADER, "colorSolido");
 
+        // Comprobamos si el shader actual soporta estas subrutinas
+        bool tieneSubrutinas = (idxAlambre != GL_INVALID_INDEX && idxSolido != GL_INVALID_INDEX);
+
         // Enviar las matrices al shader
         glUniformMatrix4fv(idView, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(idProjection, 1, GL_FALSE, glm::value_ptr(projection));
@@ -75,17 +78,25 @@ namespace PAG {
             // Envia la matriz de ese modelo al shader
             glUniformMatrix4fv(idModel,1,GL_FALSE,glm::value_ptr(model));
 
-            // Enviar el color difuso del modelo a la GPU
-            const Material& mat = modelo->getMaterial();
-            glUniform3fv(idColorDifuso, 1, glm::value_ptr(mat.difuso));
+            // Compruba si el fragment shader tiene el uniform para el color difuso
+            if (idColorDifuso != -1) {
+                // Enviar el color difuso del modelo a la GPU
+                const Material& mat = modelo->getMaterial();
+                glUniform3fv(idColorDifuso, 1, glm::value_ptr(mat.difuso));
+            }
 
             // Configura el glPolygonMode y activar la subrutina correspondiente
+            // (en caso de que el shader tenga subrutinas)
             if (modelo->getModoVisualizacion() == ModoVisualizacion::SOLIDO) {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &idxSolido);
+                if (tieneSubrutinas) {
+                    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &idxSolido);
+                }
             } else {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &idxAlambre);
+                if (tieneSubrutinas) {
+                    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &idxAlambre);
+                }
             }
             // Dibuja la geometría del modelo en pantalla
             modelo->dibujar();

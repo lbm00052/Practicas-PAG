@@ -1,3 +1,147 @@
+# Práctica 7
+
+## Mejoras implementadas en esta práctica
+
+En esta práctica se han implementado las siguientes mejoras:
+
+### Soporte para propiedades de material en la clase Modelo
+
+Para permitir que cada objeto tenga propiedades de material, se ha definido una estructura `Material` en la clase `Modelo`. Dicha estructura almacena:
+
+- `ambiente`: vector que representa el color de la luz ambiental reflejada por el objeto.
+- `difuso`: vector que representa el color base del material bajo luz directa.
+- `especular`: vector que representa el color del brillo especular del objeto.
+- `exponenteEspecular`: valor flotante que controla la concentración o pulido del brillo especular.
+
+Cada objeto instanciado mediante la clase `Modelo` mantiene sus propias propiedades de `Material` como atributo privado, accesible y modificable mediante métodos getter y setter.
+
+### Implementación de subrutinas GLSL y modos de visualización
+
+Para cambiar entre el modo de renderizado sólido y el de alambre sin añadir condicionales en la GPU, se han implementado subrutinas GLSL dentro del fragment shader, donde se ha definido:
+
+- Una subrutina `subroutine vec4 fCalcularColor()` que actúa como la firma del método de coloreado.
+- Un uniform de subrutina `subroutine uniform fCalcularColor uMetodoColorElegido` que actúa como selector de la función activa.
+- La implementación `colorAlambre()`, encargada de devolver un color rojo para el modo de alambre.
+- La implementación `colorSolido()`, encargada de devolver un color basado en el atributo difuso del material `vec4(uColorDifuso, 1.0)` para el modo sólido.
+
+Para gestionar esto en la CPU, se ha creado un `enum class ModoVisualizacion { SOLIDO, ALAMBRE }` en la clase `Modelo`. Durante la fase de refresco en `Renderer::refrescar()`, se obtiene el índice de la subrutina deseada en la GPU con `glGetSubroutineIndex` y se activa mediante `glUniformSubroutinesuiv`, adaptando también la llamada `glPolygonMode` según corresponda (`GL_FILL` o `GL_LINE`).
+
+### Integración de controles de material y visualización en ImGui
+
+Se ha actualizado la interfaz gráfica `GUI` ampliando la ventana  "Gestión de Modelos" con una cuarta pestaña llamada **"Material"**. Esta pestaña incorpora:
+
+- Controles para editar dinámicamente los colores Ambiente, Difuso y Especular del modelo seleccionado.
+- Un control para ajustar el exponente especular entre los valores 1.0 y 128.0.
+- Un selector para alternar entre el modo de visualización **Sólido (Relleno)** y **Alambre**.
+
+### Retrocompatibilidad con shaders anteriores
+
+La función de `Renderer::refrescar()` ha sido modificada con comprobaciones para que no haya problemas al cargar shaders anteriores a esta práctica.
+
+---
+
+## Manual de Usuario
+
+En este manual se describen todas las acciones e interacciones que el usuario puede realizar dentro de la aplicación mediante la interfaz gráfica **Dear ImGui** y el control con el ratón/teclado.
+
+### 1. Consola de Mensajes y Registros ("Mensajes")
+* **Visualización de Eventos:** En la ventana flotante **Mensajes** se muestra un historial con todas las salidas, avisos e informes del sistema en tiempo real.
+* **Scroll Automático:** La lista se desplaza automáticamente hacia el final cada vez que entra una nueva línea para mantener siempre visible el evento más reciente.
+* **Información de Inicio:** Al abrir la aplicación se registran las especificaciones del contexto gráfico OpenGL construido (Renderer, Vendor, Versión y Shaders).
+
+### 2. Personalización del Fondo ("Selector de color")
+* **Paleta Interactiva:** En la ventana **Selector de color**, el usuario puede cambiar el color de fondo del puerto de vista (*viewport*).
+* **Modificación Mediante Rueda del Ratón:** Al mover la rueda del ratón (*scroll*) sobre el puerto de vista principal, el color de fondo se aclara u oscurece de forma gradual.
+
+### 3. Carga Dinámica de Shaders ("Shader Program")
+* **Ruta del Shader:** En la ventana **Shader Program**, el cuadro de texto permite escribir la ruta base de los archivos GLSL (por ejemplo, `../pag06`).
+* **Botón Cargar:** Al pulsar en **Cargar**, la aplicación compila y enlaza dinámicamente el Vertex Shader y el Fragment Shader. Si ocurre algún error sintáctico o de archivo, el mensaje de excepción se muestra directamente en la consola de mensajes.
+
+### 4. Control y Movimientos de la Cámara Virtual ("Cámara")
+
+#### A. Selección del Modo de Movimiento
+En el menú desplegable de la ventana **Cámara**, el usuario puede elegir uno de los 6 tipos de movimiento activos:
+
+1. **Dolly:** Desplazamiento de la cámara en el plano local (ejes X y Z).
+2. **Crane:** Desplazamiento vertical de la cámara (eje Y).
+3. **Pan:** Rotación de la mirada de la cámara sobre su propio eje vertical.
+4. **Tilt:** Rotación de la mirada de la cámara sobre su propio eje lateral.
+5. **Orbit:** Órbita circular en coordenadas esféricas alrededor del punto objetivo.
+6. **Zoom:** Modificación del campo de visión de la cámara.
+
+#### B. Métodos de Control
+
+* **Mediante la Interfaz ImGui:** Cada modo seleccionado despliega botones específicos en la ventana para mover la cámara.
+* **Mediante Arrastre con el Ratón:** 
+  - Manteniendo pulsado el **clic izquierdo del ratón** sobre el lienzo y arrastrando el cursor, la cámara se moverá continuamente según el modo seleccionado.
+  - *Captura Inteligente de Ratón:* Si el cursor interactúa o arrastra una ventana de ImGui, los movimientos de la cámara quedan automáticamente bloqueados para evitar desplazamientos involuntarios.
+
+### 5. Gestión de Modelos y Objetos 3D ("Gestión de Modelos")
+
+La ventana **Gestión de Modelos** organiza todas las herramientas asociadas a los objetos tridimensionales de la escena dividiéndose en cuatro pestañas:
+
+#### Pestaña 1: Selección y Control
+* **Información de Escena:** Muestra el número total de modelos 3D cargados actualmente en memoria.
+* **Añadir Triángulo Básico:** Añade instantáneamente un triángulo primario centrado en el origen y lo marca como modelo activo.
+* **Eliminar Modelo Seleccionado:** Elimina de la escena el modelo activo actual y ajusta automáticamente los índices para evitar lecturas fuera de rango.
+* **Selector de Modelo Activo (`Modelo Activo`):** Control numérico con botones +/- para cambiar el índice del modelo activo al que se le aplicarán las transformaciones, materiales o modos de dibujado.
+
+#### Pestaña 2: Transformaciones
+Manipula los atributos geométricos individuales del modelo activo seleccionado:
+* **Traslación (`T`)**: Campo numérico vectorial 3D editable o arrastrable con el ratón para desplazar el objeto en los ejes X, Y y Z.
+* **Rotación (`R`)**: Campo numérico vectorial 3D editable o arrastrable con el ratón para girar el objeto en grados sobre sus ejes X, Y y Z.
+* **Escala (`S`)**: Campo numérico vectorial 3D editable o arrastrable con el ratón para escalar el objeto de forma independiente en X, Y y Z.
+
+#### Pestaña 3: Cargar OBJ
+Permite importar geometrías externas en formato `.obj`:
+* **Carga por Explorador Nativo:** Pulsando en **Abrir Explorador**, se despliega una ventana modal navegable por el sistema de archivos del equipo que filtra únicamente los archivos con extensión `.obj`. Al seleccionar un archivo y confirmar, el modelo se importa a la GPU y se añade a la escena como modelo activo.
+* **Carga por Ruta Manual:** Escribiendo la ruta del fichero en el cuadro de texto y pulsando **Cargar desde Ruta Manual**.
+
+#### Pestaña 4: Material y Modo de Visualización
+Ajusta la apariencia visual del modelo activo seleccionado:
+* **Color Ambiente:** Selector de color para definir la respuesta del material a la luz ambiental indirecta.
+* **Color Difuso:** Selector de color para definir el color base del material bajo luz directa (utilizado en el renderizado sólido).
+* **Color Especular:** Selector de color para definir el color del brillo o destello especular.
+* **Exponente Especular:** Deslizador numérico para acotar o concentrar el foco del brillo especular.
+* **Modo de Visualización (Sólido vs Alambre):** Desplegable que permite alternar entre:
+  - **Sólido (Relleno):** Utiliza la subrutina GLSL `colorSolido()` para pintar las caras del objeto rellenas con el color difuso del material.
+  - **Alambre:** Utiliza la subrutina GLSL `colorAlambre()` y activa `glPolygonMode(GL_LINE)` para renderizar exclusivamente las aristas de la malla en un color rojo fijo.
+
+En esta práctica, para simplificar, el único color que realiza cambios sobre el modelo es el color difuso.
+
+### 6. Controles Generales y Teclado
+* **Cierre de la Aplicación:** Pulsando la tecla **Escape** o el botón de cierre de la ventana del sistema (X), la aplicación finaliza liberando de forma segura los recursos de OpenGL, GLFW e ImGui.
+
+### Diagrama UML
+
+                 +---------------+
+                 |    main.cpp   |
+                 +---------------+
+                  /   |         \
+                 /    |          \
+                v     v           v
+           +------+ +------+     +---------------+     +------+
+           | GLFW | | GUI  | --> |  Renderer     | --> |OpenGL|
+           +------+ +------+     +---------------+     +------+
+                       |         | Camera        |
+                       v         | ShaderProgram |
+                   +----------+  | Modelo (std::vector<unique_ptr>)
+                   |Dear ImGUI|  +---------------+
+                   +----------+       /    |    \
+                                     /     |     \
+                                    v      v      v
+                        +------------+ +-------+ +---------------+
+                        |   Camera   | |Modelo | | ShaderProgram |
+                        +------------+ +-------+ +---------------+
+                                           |
+                                           +---> [Material (struct)]
+                                           |---> [ModoVisualizacion (enum)]
+                                           v
+                                    +--------------+
+                                    |    Assimp    |
+                                    +--------------+
+
+
 # Práctica 6
 
 ## Mejoras implementadas en esta práctica

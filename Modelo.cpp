@@ -122,6 +122,14 @@ namespace PAG{
         return escala;
     }
 
+    // Getter y setter para el material del modelo
+    Material& Modelo::getMaterial() {
+        return material;
+    }
+    void Modelo::setMaterial(const Material& mat) {
+        material = mat;
+    }
+
     // Actualiza la matriz de modelado
     void Modelo::actualizarMatrizModelo() {
 

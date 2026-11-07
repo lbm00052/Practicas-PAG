@@ -395,6 +395,29 @@ namespace PAG {
                     }
                     ImGui::EndTabItem();
                 }
+
+                // Pestaña 4: Propiedades del material
+                if (ImGui::BeginTabItem("Material")) {
+                    if (!modelos.empty()) {
+                        auto &modelo = modelos[modeloSeleccionado];
+                        Material &mat = modelo->getMaterial();
+
+                        ImGui::Text("Modelo activo: %d", modeloSeleccionado);
+                        ImGui::Separator();
+
+                        // Selectores de color (RGB) para Ambiente, Difuso y Especular
+                        ImGui::ColorEdit3("Color Ambiente", &mat.ambiente.x);
+                        ImGui::ColorEdit3("Color Difuso", &mat.difuso.x);
+                        ImGui::ColorEdit3("Color Especular", &mat.especular.x);
+
+                        ImGui::Spacing();
+                        // Slider para el brillo/exponente especular
+                        ImGui::SliderFloat("Exponente Especular", &mat.exponenteEspecular, 1.0f, 128.0f);
+                    } else {
+                        ImGui::TextDisabled("Carga o añade un modelo para cambiar su material.");
+                    }
+                    ImGui::EndTabItem();
+                }
                 ImGui::EndTabBar();
             }
         }

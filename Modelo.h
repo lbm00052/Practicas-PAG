@@ -13,6 +13,14 @@ using GLuint = unsigned int;
 
 namespace PAG {
 
+    // Estructura para agrupar las propiedades del material
+    struct Material {
+        glm::vec3 ambiente = glm::vec3(0.1f, 0.1f, 0.1f);
+        glm::vec3 difuso   = glm::vec3(0.8f, 0.8f, 0.8f);
+        glm::vec3 especular= glm::vec3(1.0f, 1.0f, 1.0f);
+        float exponenteEspecular = 32.0f;
+    };
+
     /**
      * @brief Clase encargada de representar un modelo
      */
@@ -34,6 +42,9 @@ namespace PAG {
             glm::vec3 traslacion = glm::vec3(0.0f);
             glm::vec3 rotacion = glm::vec3(0.0f);
             glm::vec3 escala = glm::vec3(1.0f);
+
+            // Material del modelo
+            Material material;
 
             std::vector<float> vertices;
             std::vector<unsigned int> indices;
@@ -60,6 +71,10 @@ namespace PAG {
             glm::vec3& getTraslacion();
             glm::vec3& getRotacion();
             glm::vec3& getEscala();
+
+            // Getter y setter para el material del modelo
+            Material& getMaterial();
+            void setMaterial(const Material& mat);
 
             // Crea un triángulo
             void crearTriangulo();

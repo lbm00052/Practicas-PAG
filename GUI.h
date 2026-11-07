@@ -1,7 +1,6 @@
 #ifndef PRACTICA1_GUI_H
 #define PRACTICA1_GUI_H
 
-#include "iostream"
 #include <GLFW/glfw3.h>
 #include "vector"
 #include "imfilebrowser.h"

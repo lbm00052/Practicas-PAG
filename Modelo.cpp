@@ -130,6 +130,14 @@ namespace PAG{
         material = mat;
     }
 
+    // Getter y Setter para el modo de visualización ---
+    ModoVisualizacion Modelo::getModoVisualizacion() const {
+        return modoVis;
+    }
+    void Modelo::setModoVisualizacion(ModoVisualizacion modo) {
+        modoVis = modo;
+    }
+
     // Actualiza la matriz de modelado
     void Modelo::actualizarMatrizModelo() {
 

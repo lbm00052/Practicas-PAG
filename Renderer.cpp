@@ -42,9 +42,11 @@ namespace PAG {
         // Si existe un shader program se dibuja el modelo, sino no.
         if(shaderProgram.getId() == 0) return;
 
-        // Activación del shader program y dibujo del triángulo
-        glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
-        glUseProgram ( shaderProgram.getId() ); // idSP
+        // Activación del shader program
+        GLint idSP = shaderProgram.getId();
+        glUseProgram(idSP); // IMPORTANTE: para poder activar una implementación de una subrutina,
+                            // el shader program correspondiente tiene que haberse activado antes
+                            // con glUseProgram
 
         // Obtener la matriz de la vista de la cámara y la de proyección
         glm::mat4 view = camera.getViewMatrix();
@@ -54,6 +56,13 @@ namespace PAG {
         GLint idView = glGetUniformLocation(shaderProgram.getId(),"view");
         GLint idProjection = glGetUniformLocation(shaderProgram.getId(),"projection");
         GLint idModel = glGetUniformLocation(shaderProgram.getId(),"model");
+
+        // Localizacion del uniform del material
+        GLint idColorDifuso = glGetUniformLocation(idSP,"uColorDifuso");
+
+        // Obtención de los índices de las dos implementaciones de la subrutina en la GPU
+        GLuint idxAlambre = glGetSubroutineIndex(idSP, GL_FRAGMENT_SHADER, "colorAlambre");
+        GLuint idxSolido  = glGetSubroutineIndex(idSP, GL_FRAGMENT_SHADER, "colorSolido");
 
         // Enviar las matrices al shader
         glUniformMatrix4fv(idView, 1, GL_FALSE, glm::value_ptr(view));
@@ -65,8 +74,19 @@ namespace PAG {
             glm::mat4 model = modelo->getModelMatrix();
             // Envia la matriz de ese modelo al shader
             glUniformMatrix4fv(idModel,1,GL_FALSE,glm::value_ptr(model));
-            // Para ver el modelo en malla de triángulos
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+            // Enviar el color difuso del modelo a la GPU
+            const Material& mat = modelo->getMaterial();
+            glUniform3fv(idColorDifuso, 1, glm::value_ptr(mat.difuso));
+
+            // Configura el glPolygonMode y activar la subrutina correspondiente
+            if (modelo->getModoVisualizacion() == ModoVisualizacion::SOLIDO) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &idxSolido);
+            } else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &idxAlambre);
+            }
             // Dibuja la geometría del modelo en pantalla
             modelo->dibujar();
         }

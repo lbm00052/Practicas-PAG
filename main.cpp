@@ -171,7 +171,7 @@ int main() {
         modelos.back()->crearTriangulo();
         modelos.back()->actualizarMatrizModelo();
 
-        PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag06");
+        PAG::Renderer::getInstancia().getShaderProgram().creaShaderProgram("../pag07");
     } catch (const std::exception& e) {
         PAG::GUI::getInstancia().addMensaje(e.what());
     }

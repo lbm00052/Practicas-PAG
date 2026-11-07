@@ -413,6 +413,20 @@ namespace PAG {
                         ImGui::Spacing();
                         // Slider para el brillo/exponente especular
                         ImGui::SliderFloat("Exponente Especular", &mat.exponenteEspecular, 1.0f, 128.0f);
+
+                        ImGui::Separator();
+                        // Selector de Modo de Visualización
+                        ImGui::Text("Modo de Visualización:");
+                        int modoActual = (modelo->getModoVisualizacion() == ModoVisualizacion::SOLIDO) ? 0 : 1;
+                        const char* modosNames[] = { "Sólido (Relleno)", "Alambre" };
+
+                        if (ImGui::Combo("##ModoVis", &modoActual, modosNames, IM_ARRAYSIZE(modosNames))) {
+                            if (modoActual == 0) {
+                                modelo->setModoVisualizacion(ModoVisualizacion::SOLIDO);
+                            } else {
+                                modelo->setModoVisualizacion(ModoVisualizacion::ALAMBRE);
+                            }
+                        }
                     } else {
                         ImGui::TextDisabled("Carga o añade un modelo para cambiar su material.");
                     }

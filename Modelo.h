@@ -21,6 +21,11 @@ namespace PAG {
         float exponenteEspecular = 32.0f;
     };
 
+    // Enum para el modo de visualización (sólido o alambre)
+    enum class ModoVisualizacion {
+        SOLIDO, ALAMBRE
+    };
+
     /**
      * @brief Clase encargada de representar un modelo
      */
@@ -46,9 +51,13 @@ namespace PAG {
             // Material del modelo
             Material material;
 
+            // Modo de visualización por defecto (sólido)
+            ModoVisualizacion modoVis = ModoVisualizacion::SOLIDO;
+
+            // Vectores para los vertices e indices del objeto
             std::vector<float> vertices;
             std::vector<unsigned int> indices;
-            unsigned int numIndices = 0;
+            unsigned int numIndices = 0; // Numero de indices
 
         public:
 
@@ -75,6 +84,10 @@ namespace PAG {
             // Getter y setter para el material del modelo
             Material& getMaterial();
             void setMaterial(const Material& mat);
+
+            // Getter y Setter para el modo de visualización
+            ModoVisualizacion getModoVisualizacion() const;
+            void setModoVisualizacion(ModoVisualizacion modo);
 
             // Crea un triángulo
             void crearTriangulo();
